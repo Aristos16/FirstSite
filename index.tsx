@@ -267,6 +267,17 @@ function Index() {
           will-change: transform;
         }
 
+        .ambient-blob {
+          animation: ambientBlobDrift 16s ease-in-out infinite;
+          border-radius: 58% 42% 66% 34% / 42% 58% 42% 58%;
+          will-change: transform, border-radius;
+        }
+
+        .ambient-tile {
+          animation: ambientTileFloat 13s ease-in-out infinite;
+          will-change: transform;
+        }
+
         .process-kicker::before {
           display: none;
         }
@@ -305,6 +316,25 @@ function Index() {
           0%, 100% { transform: translate3d(0, 0, 0); }
           38% { transform: translate3d(-15px, 10px, 0); }
           74% { transform: translate3d(8px, -12px, 0); }
+        }
+
+        @keyframes ambientBlobDrift {
+          0%, 100% {
+            transform: translate3d(0, 0, 0) rotate(-5deg);
+            border-radius: 58% 42% 66% 34% / 42% 58% 42% 58%;
+          }
+          45% {
+            transform: translate3d(12px, -14px, 0) rotate(4deg);
+            border-radius: 42% 58% 37% 63% / 58% 42% 61% 39%;
+          }
+          75% {
+            transform: translate3d(-6px, 8px, 0) rotate(-1deg);
+          }
+        }
+
+        @keyframes ambientTileFloat {
+          0%, 100% { transform: translate3d(0, 0, 0) rotate(7deg); }
+          50% { transform: translate3d(-10px, -12px, 0) rotate(-5deg); }
         }
 
         @keyframes menuDrop {
@@ -493,8 +523,8 @@ function Index() {
       >
         <div className="pointer-events-none absolute -left-24 top-24 h-56 w-56 rounded-full bg-[#7898aa]/10 blur-3xl" />
         <div className="ambient-dot pointer-events-none absolute left-[7%] top-[18%] h-4 w-4 rounded-full bg-[#c97745]/35" />
-        <div className="ambient-dot-reverse pointer-events-none absolute right-[8%] top-[28%] h-7 w-7 rounded-full bg-[#153351]/10" />
-        <div className="ambient-dot pointer-events-none absolute bottom-[15%] right-[18%] h-3 w-3 rounded-full bg-[#7898aa]/45" style={{ animationDelay: "-4s" }} />
+        <div className="ambient-blob pointer-events-none absolute right-[5%] top-[20%] h-20 w-24 border border-[#153351]/10" />
+        <div className="ambient-tile pointer-events-none absolute bottom-[13%] right-[18%] h-6 w-6 rounded-lg border border-[#7898aa]/35 bg-[#d4e0e3]/35" style={{ animationDelay: "-4s" }} />
 
         <div className="relative mx-auto max-w-6xl px-6 py-20 md:py-24">
           <div
@@ -502,8 +532,8 @@ function Index() {
             className="grid gap-10 md:grid-cols-[0.9fr_1.1fr] md:items-start"
           >
             <div className="relative overflow-hidden rounded-3xl bg-[#0b2136] p-8 text-white shadow-[0_22px_60px_rgba(11,33,54,0.18)] sm:p-10">
-              <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full border border-[#7898aa]/20" />
-              <div className="absolute -right-3 top-16 h-24 w-24 rounded-full border border-[#c97745]/20" />
+              <div className="ambient-blob absolute -right-12 -top-10 h-40 w-44 border border-[#7898aa]/18" />
+              <div className="ambient-tile absolute right-5 top-20 h-16 w-16 rounded-2xl border border-[#c97745]/18" style={{ animationDelay: "-5s" }} />
               <Rocket className="absolute bottom-7 right-7 h-24 w-24 rotate-12 text-white/[0.05]" />
               <p className="section-kicker section-kicker-dark relative">
                 About us
@@ -563,8 +593,8 @@ function Index() {
         id="services"
         className="relative scroll-mt-24 overflow-hidden bg-[linear-gradient(180deg,#dfe7e9_0%,#e9eef0_55%,#dfe7e9_100%)]"
       >
-        <div className="ambient-dot pointer-events-none absolute right-[7%] top-[14%] h-6 w-6 rounded-full bg-[#c97745]/20" />
-        <div className="ambient-dot-reverse pointer-events-none absolute bottom-[18%] left-[5%] h-4 w-4 rounded-full bg-[#153351]/12" />
+        <div className="ambient-blob pointer-events-none absolute right-[5%] top-[10%] h-24 w-28 border border-[#c97745]/14" />
+        <div className="ambient-tile pointer-events-none absolute bottom-[16%] left-[5%] h-7 w-7 rounded-xl border border-[#153351]/12 bg-[#d4e0e3]/25" />
         <div className="ambient-dot pointer-events-none absolute right-[20%] bottom-[10%] h-3 w-3 rounded-full bg-[#7898aa]/40" style={{ animationDelay: "-5s" }} />
         <div data-reveal className="relative mx-auto max-w-6xl px-6 py-24">
           <div className="mb-14 max-w-2xl">
@@ -659,8 +689,8 @@ function Index() {
         id="portfolio"
         className="relative scroll-mt-24 overflow-hidden bg-[linear-gradient(180deg,#dfe7e9_0%,#e9eef0_100%)]"
       >
-        <div className="ambient-dot pointer-events-none absolute left-[9%] top-[19%] h-5 w-5 rounded-full bg-[#7898aa]/30" />
-        <div className="ambient-dot-reverse pointer-events-none absolute bottom-[14%] right-[7%] h-8 w-8 rounded-full bg-[#c97745]/15" />
+        <div className="ambient-tile pointer-events-none absolute left-[8%] top-[18%] h-7 w-7 rounded-xl border border-[#7898aa]/28 bg-[#d4e0e3]/30" />
+        <div className="ambient-blob pointer-events-none absolute bottom-[10%] right-[5%] h-20 w-24 border border-[#c97745]/13" style={{ animationDelay: "-4s" }} />
         <div className="relative mx-auto max-w-5xl px-6 py-16 md:py-20">
         <div data-reveal className="mb-9 max-w-xl">
           <p className="section-kicker">
@@ -718,10 +748,10 @@ function Index() {
 
       {/* Why choose us */}
       <section className="relative overflow-hidden bg-[#e9eef0]">
-        <div className="ambient-dot pointer-events-none absolute left-[5%] top-[18%] h-7 w-7 rounded-full bg-[#153351]/10" />
-        <div className="ambient-dot-reverse pointer-events-none absolute right-[6%] top-[32%] h-4 w-4 rounded-full bg-[#c97745]/30" />
+        <div className="ambient-blob pointer-events-none absolute left-[3%] top-[13%] h-24 w-28 border border-[#153351]/9" />
+        <div className="ambient-dot-reverse pointer-events-none absolute right-[7%] top-[30%] h-4 w-4 rounded-full bg-[#c97745]/28" />
         <div className="ambient-dot pointer-events-none absolute bottom-[12%] left-[18%] h-3 w-3 rounded-full bg-[#7898aa]/40" style={{ animationDelay: "-6s" }} />
-        <div className="ambient-dot-reverse pointer-events-none absolute bottom-[16%] right-[15%] h-9 w-9 rounded-full bg-[#c97745]/12" style={{ animationDelay: "-3s" }} />
+        <div className="ambient-tile pointer-events-none absolute bottom-[13%] right-[14%] h-8 w-8 rounded-xl border border-[#c97745]/14 bg-[#dfe7e9]/25" style={{ animationDelay: "-3s" }} />
         <div data-reveal className="relative mx-auto max-w-6xl px-6 py-24">
           <div className="mb-14 max-w-2xl">
             <p className="section-kicker">
@@ -752,7 +782,7 @@ function Index() {
         id="contact"
         className="relative scroll-mt-24 overflow-hidden bg-[linear-gradient(180deg,#e9eef0_0%,#dfe7e9_100%)]"
       >
-        <div className="ambient-dot pointer-events-none absolute right-[8%] top-[16%] h-6 w-6 rounded-full bg-[#7898aa]/25" />
+        <div className="ambient-blob pointer-events-none absolute right-[5%] top-[11%] h-24 w-28 border border-[#7898aa]/18" />
         <div className="ambient-dot-reverse pointer-events-none absolute bottom-[10%] left-[6%] h-4 w-4 rounded-full bg-[#c97745]/25" />
         <div className="relative mx-auto max-w-6xl px-6 py-24">
         <div data-reveal className="grid gap-12 md:grid-cols-2">
