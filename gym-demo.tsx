@@ -234,9 +234,9 @@ const gymMarkup = String.raw`
             muted
             loop
             playsinline
-            preload="metadata"
+            preload="auto"
           >
-            <source src="/videos/gym.mp4" type="video/mp4">
+            <source src="/Videos/gym.mp4" type="video/mp4">
 
             Ο browser σου δεν υποστηρίζει βίντεο.
           </video>
@@ -2608,12 +2608,27 @@ function BlueCoreGymDemo() {
     root.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((link) => {
       const handleAnchor = (event: Event) => {
         event.preventDefault();
+        event.stopPropagation();
+
         const targetId = link.getAttribute("href")?.slice(1);
         if (!targetId) return;
+
+        const target = root.querySelector<HTMLElement>(`#${targetId}`);
+        if (!target) return;
+
         closeMenu();
-        root.querySelector<HTMLElement>(`#${targetId}`)?.scrollIntoView({
+
+        // Scroll only this demo document. scrollIntoView can also move the
+        // parent Rocket3Dev page when the demo is rendered inside an iframe.
+        const headerHeight =
+          root.querySelector<HTMLElement>(".header")?.getBoundingClientRect()
+            .height ?? 0;
+        const targetTop =
+          target.getBoundingClientRect().top + window.scrollY - headerHeight;
+
+        window.scrollTo({
+          top: Math.max(0, targetTop),
           behavior: "smooth",
-          block: "start",
         });
       };
       link.addEventListener("click", handleAnchor);
@@ -2622,6 +2637,21 @@ function BlueCoreGymDemo() {
 
     const gymVideo = root.querySelector<HTMLVideoElement>("#gymVideo");
     const videoButton = root.querySelector<HTMLButtonElement>("#videoButton");
+
+    if (gymVideo) {
+      gymVideo.muted = true;
+      gymVideo.defaultMuted = true;
+      gymVideo.playsInline = true;
+    }
+
+    const tryAutoplayVideo = async () => {
+      if (!gymVideo || document.visibilityState === "hidden") return;
+      try {
+        await gymVideo.play();
+      } catch {
+        // Some browsers still require a user gesture. The play button remains available.
+      }
+    };
 
     const updateVideoButton = () => {
       if (!gymVideo || !videoButton) return;
@@ -2647,12 +2677,31 @@ function BlueCoreGymDemo() {
       updateVideoButton();
     };
 
+    const handleCanPlay = () => {
+      void tryAutoplayVideo();
+    };
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") void tryAutoplayVideo();
+    };
+
     videoButton?.addEventListener("click", toggleVideo);
+    gymVideo?.addEventListener("canplay", handleCanPlay);
     gymVideo?.addEventListener("play", updateVideoButton);
     gymVideo?.addEventListener("pause", updateVideoButton);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    if (gymVideo) {
+      gymVideo.load();
+      if (gymVideo.readyState >= 2) void tryAutoplayVideo();
+    }
+
     cleanup.push(() => videoButton?.removeEventListener("click", toggleVideo));
+    cleanup.push(() => gymVideo?.removeEventListener("canplay", handleCanPlay));
     cleanup.push(() => gymVideo?.removeEventListener("play", updateVideoButton));
     cleanup.push(() => gymVideo?.removeEventListener("pause", updateVideoButton));
+    cleanup.push(() =>
+      document.removeEventListener("visibilitychange", handleVisibilityChange)
+    );
     updateVideoButton();
 
     const form = root.querySelector<HTMLFormElement>("#contactForm");

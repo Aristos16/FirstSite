@@ -1786,6 +1786,7 @@ function Index() {
                                 src={`${p.href}?preview=1`}
                                 title={`${p.title} interactive preview`}
                                 loading="lazy"
+                                allow="autoplay; fullscreen"
                                 className="absolute left-0 top-0 h-[720px] w-[312.5%] origin-top-left scale-[0.32] border-0 bg-white sm:w-[240%] sm:scale-[0.4167] lg:w-[218.2%] lg:scale-[0.4583]"
                               />
                             </div>

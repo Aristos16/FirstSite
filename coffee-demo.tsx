@@ -224,7 +224,7 @@ function CoffeeDemo() {
     event.preventDefault();
     event.stopPropagation();
 
-    const section = document.getElementById(sectionId);
+    const section = rootRef.current?.querySelector<HTMLElement>(`#${sectionId}`);
     if (!section) return;
 
     const navHeight =
