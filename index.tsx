@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import {
   Code2,
   Rocket,
@@ -27,20 +27,20 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Rocket3Dev — Modern Websites in Heraklion" },
+      { title: "Rocket3Dev" },
       {
         name: "description",
         content:
-          "Three Computer Science students in Heraklion building modern, responsive, affordable websites for businesses, shops, restaurants, and individuals.",
+          "Rocket3Dev is a three-person web development team in Heraklion, Crete, creating modern, responsive websites for businesses and professionals.",
       },
       {
         property: "og:title",
-        content: "Rocket3Dev — Modern Websites in Heraklion",
+        content: "Rocket3Dev",
       },
       {
         property: "og:description",
         content:
-          "Modern, responsive, affordable websites by Rocket3Dev, a three-person Computer Science team in Heraklion, Crete.",
+          "Modern, responsive websites by Rocket3Dev, a three-person web development team based in Heraklion, Crete.",
       },
     ],
   }),
@@ -140,9 +140,9 @@ const navItems = [
 function Index() {
   const [open, setOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
-  const [contactStatus, setContactStatus] = useState<
-    "idle" | "sending" | "success" | "error"
-  >("idle");
+  const [isScrolled, setIsScrolled] = useState(false);
+  const isProgrammaticScroll = useRef(false);
+  const scrollAnimationFrame = useRef<number | null>(null);
 
   useEffect(() => {
     const elements = document.querySelectorAll<HTMLElement>("[data-reveal]");
@@ -167,77 +167,139 @@ function Index() {
       .map((item) => document.getElementById(item.href.slice(1)))
       .filter((section): section is HTMLElement => Boolean(section));
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visibleEntry = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+    let ticking = false;
 
-        if (visibleEntry?.target.id) {
-          setActiveSection(visibleEntry.target.id);
-        }
-      },
-      {
-        rootMargin: "-28% 0px -58% 0px",
-        threshold: [0, 0.1, 0.3, 0.6],
-      },
-    );
+    const updateNavigationState = () => {
+      ticking = false;
 
-    sections.forEach((section) => observer.observe(section));
+      const nextScrolled = window.scrollY > 28;
+      setIsScrolled((current) =>
+        current === nextScrolled ? current : nextScrolled,
+      );
 
-    const keepHomeActiveAtTop = () => {
-      if (window.scrollY < 120) setActiveSection("home");
+      if (isProgrammaticScroll.current) return;
+
+      const marker = window.scrollY + (window.innerWidth >= 768 ? 132 : 108);
+      let currentSection = "home";
+
+      for (const section of sections) {
+        if (section.offsetTop <= marker) currentSection = section.id;
+      }
+
+      const pageBottom = window.scrollY + window.innerHeight;
+      if (pageBottom >= document.documentElement.scrollHeight - 24) {
+        currentSection = "contact";
+      }
+
+      setActiveSection((current) =>
+        current === currentSection ? current : currentSection,
+      );
     };
 
-    keepHomeActiveAtTop();
-    window.addEventListener("scroll", keepHomeActiveAtTop, { passive: true });
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(updateNavigationState);
+    };
+
+    updateNavigationState();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
 
     return () => {
-      observer.disconnect();
-      window.removeEventListener("scroll", keepHomeActiveAtTop);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
     };
   }, []);
 
-  async function handleContactSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setContactStatus("sending");
+  useEffect(() => {
+    const cancelRunningScroll = () => {
+      if (scrollAnimationFrame.current !== null) {
+        window.cancelAnimationFrame(scrollAnimationFrame.current);
+        scrollAnimationFrame.current = null;
+        isProgrammaticScroll.current = false;
+      }
+    };
 
-    const form = event.currentTarget;
-    const formData = new FormData(form);
-    formData.append("_subject", "New Rocket3Dev website enquiry");
-    formData.append("_template", "table");
-    formData.append("_captcha", "false");
+    window.addEventListener("wheel", cancelRunningScroll, { passive: true });
+    window.addEventListener("touchstart", cancelRunningScroll, {
+      passive: true,
+    });
 
-    try {
-      const response = await fetch(
-        "https://formsubmit.co/ajax/rocket3devs@gmail.com",
-        {
-          method: "POST",
-          headers: { Accept: "application/json" },
-          body: formData,
-        },
-      );
+    return () => {
+      cancelRunningScroll();
+      window.removeEventListener("wheel", cancelRunningScroll);
+      window.removeEventListener("touchstart", cancelRunningScroll);
+    };
+  }, []);
 
-      const result = await response.json().catch(() => null);
-      const failed =
-        !response.ok ||
-        result?.success === false ||
-        result?.success === "false";
-
-      if (failed) throw new Error("The message could not be sent.");
-
-      form.reset();
-      setContactStatus("success");
-    } catch (error) {
-      console.error(error);
-      setContactStatus("error");
+  function animateScrollTo(targetTop: number) {
+    if (scrollAnimationFrame.current !== null) {
+      window.cancelAnimationFrame(scrollAnimationFrame.current);
     }
+
+    const startTop = window.scrollY;
+    const distance = targetTop - startTop;
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    if (prefersReducedMotion || Math.abs(distance) < 2) {
+      window.scrollTo(0, targetTop);
+      isProgrammaticScroll.current = false;
+      scrollAnimationFrame.current = null;
+      return;
+    }
+
+    const duration = Math.min(760, Math.max(420, Math.abs(distance) * 0.42));
+    const startTime = window.performance.now();
+    isProgrammaticScroll.current = true;
+
+    const step = (now: number) => {
+      const progress = Math.min(1, (now - startTime) / duration);
+      const eased = 1 - Math.pow(1 - progress, 4);
+      window.scrollTo(0, startTop + distance * eased);
+
+      if (progress < 1) {
+        scrollAnimationFrame.current = window.requestAnimationFrame(step);
+        return;
+      }
+
+      window.scrollTo(0, targetTop);
+      scrollAnimationFrame.current = null;
+      isProgrammaticScroll.current = false;
+    };
+
+    scrollAnimationFrame.current = window.requestAnimationFrame(step);
+  }
+
+
+  function handleSectionClick(
+    event: MouseEvent<HTMLAnchorElement>,
+    href: string,
+  ) {
+    event.preventDefault();
+
+    const sectionId = href.replace("#", "");
+    const target = document.getElementById(sectionId);
+    if (!target) return;
+
+    const compactHeaderOffset = window.innerWidth >= 768 ? 86 : 78;
+    const absoluteTop = window.scrollY + target.getBoundingClientRect().top;
+    const targetTop =
+      sectionId === "home" ? 0 : Math.max(0, absoluteTop - compactHeaderOffset);
+
+    isProgrammaticScroll.current = true;
+    setActiveSection(sectionId);
+    setOpen(false);
+    window.history.replaceState(null, "", href);
+    animateScrollTo(targetTop);
   }
 
   return (
     <div className="min-h-screen bg-[#dfe7e9] text-[#0b2136]">
       <style>{`
-        html { scroll-behavior: smooth; }
+        html { scroll-behavior: auto; }
 
         [data-reveal] {
           opacity: 0;
@@ -250,38 +312,74 @@ function Index() {
           transform: translateY(0);
         }
 
-        .nav-link {
-          position: relative;
-        }
-
-        .nav-link::after {
-          content: "";
-          position: absolute;
-          left: 0;
-          right: 0;
-          bottom: -7px;
-          height: 2px;
-          border-radius: 999px;
-          background: linear-gradient(90deg, #c97745, #7898aa);
-          transform: scaleX(0);
-          transform-origin: left;
-          transition: transform 260ms ease;
-        }
-
-        .nav-link:hover::after,
-        .nav-link:focus-visible::after,
-        .nav-link.is-active::after {
-          transform: scaleX(1);
-        }
-
-        .nav-link.is-active {
-          color: #0b2136;
-          font-weight: 600;
-        }
-
         .mobile-menu {
           animation: menuDrop 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
           transform-origin: top;
+        }
+
+        .site-header {
+          padding: 0;
+          transition: padding 720ms cubic-bezier(0.22, 1, 0.36, 1);
+          will-change: padding;
+        }
+
+        .site-header.is-compact {
+          padding: 0.75rem 0.75rem 0;
+        }
+
+        .site-nav {
+          width: 100%;
+          max-width: 100%;
+          margin-inline: auto;
+          border: 0 solid rgba(255, 255, 255, 0.55);
+          border-bottom: 1px solid rgba(21, 51, 81, 0.10);
+          border-radius: 0;
+          background: rgba(233, 238, 240, 0.96);
+          box-shadow: 0 5px 18px rgba(11, 33, 54, 0.07);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          transform: translateZ(0);
+          transition:
+            max-width 720ms cubic-bezier(0.22, 1, 0.36, 1),
+            border-radius 620ms cubic-bezier(0.22, 1, 0.36, 1),
+            border-color 520ms ease,
+            background-color 520ms ease,
+            box-shadow 620ms cubic-bezier(0.22, 1, 0.36, 1),
+            backdrop-filter 520ms ease;
+          will-change: max-width, border-radius, box-shadow;
+        }
+
+        .site-nav.is-compact {
+          max-width: 72rem;
+          border-width: 1px;
+          border-radius: 1rem;
+          background: rgba(233, 238, 240, 0.88);
+          box-shadow: 0 12px 40px rgba(11, 33, 54, 0.14);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+        }
+
+        .site-nav-inner {
+          max-width: 80rem;
+          padding: 0.875rem 1.25rem;
+          transition:
+            max-width 720ms cubic-bezier(0.22, 1, 0.36, 1),
+            padding 620ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .site-nav-inner.is-compact {
+          max-width: 72rem;
+          padding: 0.5rem 0.75rem;
+        }
+
+        @media (min-width: 640px) {
+          .site-nav-inner {
+            padding-inline: 1.75rem;
+          }
+
+          .site-nav-inner.is-compact {
+            padding-inline: 1rem;
+          }
         }
 
         .rocket-trail {
@@ -471,84 +569,142 @@ function Index() {
         }
       `}</style>
       {/* Nav */}
-      <header className="sticky top-0 z-50 border-b border-[#153351]/10 bg-[#e9eef0]/90 backdrop-blur-md">
-        <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+      <header
+        className={`site-header sticky top-0 z-50 ${isScrolled ? "is-compact" : ""}`}
+      >
+        <nav
+          data-nav-bar
+          className={`site-nav ${isScrolled ? "is-compact" : ""}`}
+        >
+          <div
+            className={`site-nav-inner mx-auto flex w-full items-center justify-between ${
+              isScrolled ? "is-compact" : ""
+            }`}
+          >
           <a
             href="#home"
-            className="flex items-center gap-2 font-semibold tracking-tight"
+            onClick={(event) => handleSectionClick(event, "#home")}
+            className="group flex items-center gap-2.5 rounded-xl px-1 py-1 font-semibold tracking-tight"
           >
-            <span className="grid h-9 w-9 place-items-center rounded-lg bg-[#153351] text-[#c97745] shadow-sm">
-              <Rocket className="h-5 w-5" />
+            <span
+              className={`grid place-items-center rounded-xl bg-[#153351] text-[#d98a50] shadow-sm transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-rotate-6 group-hover:scale-105 ${
+                isScrolled ? "h-8 w-8" : "h-10 w-10"
+              }`}
+            >
+              <Rocket
+                className={`transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                  isScrolled ? "h-4 w-4" : "h-5 w-5"
+                }`}
+              />
             </span>
-            <span className="text-lg font-bold tracking-tight text-[#153351]">
+            <span
+              className={`font-bold tracking-tight text-[#153351] transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                isScrolled ? "text-base" : "text-xl"
+              }`}
+            >
               Rocket<span className="text-[#c97745]">3</span>Dev
             </span>
           </a>
-          <ul className="hidden items-center gap-8 md:flex">
-            {navItems.map((n) => (
-              <li key={n.href}>
-                <a
-                  href={n.href}
-                  className={`nav-link text-sm transition-colors hover:text-[#0b2136] ${
-                    activeSection === n.href.slice(1)
-                      ? "is-active text-[#0b2136]"
-                      : "text-[#31526e]"
-                  }`}
-                  aria-current={
-                    activeSection === n.href.slice(1) ? "page" : undefined
-                  }
-                >
-                  {n.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-          <a
-            href="#contact"
-            className={`hidden rounded-md px-4 py-2 text-sm font-medium text-white transition-all hover:-translate-y-0.5 active:scale-[0.98] md:inline-flex ${
-              activeSection === "contact"
-                ? "bg-[#c97745] text-[#0b2136]"
-                : "bg-[#153351] hover:bg-[#31526e]"
+
+          <ul
+            className={`hidden items-center gap-1 rounded-full border border-[#153351]/8 bg-[#dbe4e6]/75 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] md:flex ${
+              isScrolled ? "p-1" : "p-1.5"
             }`}
           >
-            Get in touch
-          </a>
+            {navItems.map((item) => {
+              const isActive = activeSection === item.href.slice(1);
+
+              return (
+                <li key={item.href}>
+                  <a
+                    href={item.href}
+                    onClick={(event) => handleSectionClick(event, item.href)}
+                    className={`flex items-center gap-2 rounded-full text-sm transition-[background-color,color,box-shadow,padding] duration-300 ${
+                      isScrolled ? "px-3.5 py-1.5" : "px-[18px] py-2"
+                    } ${
+                      isActive
+                        ? "bg-[#153351] text-white shadow-[0_8px_22px_rgba(11,33,54,0.22)]"
+                        : "text-[#31526e] hover:bg-white/70 hover:text-[#0b2136]"
+                    }`}
+                    aria-current={isActive ? "location" : undefined}
+                  >
+                    <span
+                      className={`h-1.5 w-1.5 shrink-0 rounded-full bg-[#d98a50] shadow-[0_0_9px_rgba(217,138,80,0.8)] transition-all duration-300 ${
+                        isActive ? "scale-100 opacity-100" : "scale-50 opacity-0"
+                      }`}
+                    />
+                    {item.label}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+
+          <div className="hidden items-center gap-2 md:flex">
+            <a
+              href="#contact"
+              onClick={(event) => handleSectionClick(event, "#contact")}
+              className={`group inline-flex items-center gap-2 rounded-full bg-[#c97745] text-sm font-semibold text-[#0b2136] shadow-[0_8px_24px_rgba(201,119,69,0.22)] transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:bg-[#d98a50] active:scale-[0.98] ${
+                isScrolled ? "px-3.5 py-1.5" : "px-5 py-2.5"
+              }`}
+            >
+              Start a project
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            </a>
+          </div>
+
           <button
             onClick={() => setOpen(!open)}
-            className="rounded-md p-2 transition-colors hover:bg-[#dbe4e6] md:hidden"
+            className="grid h-10 w-10 place-items-center rounded-full border border-[#153351]/10 bg-[#dbe4e6]/80 text-[#153351] transition-all hover:rotate-3 hover:bg-white md:hidden"
             aria-label="Menu"
+            aria-expanded={open}
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
+          </div>
         </nav>
+
         {open && (
-          <div className="mobile-menu border-t border-[#153351]/10 bg-[#e9eef0] shadow-lg md:hidden">
-            <ul className="mx-auto flex max-w-6xl flex-col px-6 py-4">
-              {navItems.map((n) => (
-                <li key={n.href}>
-                  <a
-                    href={n.href}
-                    onClick={() => setOpen(false)}
-                    className={`block rounded-md px-2 py-2.5 text-sm transition-all hover:translate-x-1 hover:bg-[#dbe4e6] hover:text-[#0b2136] ${
-                      activeSection === n.href.slice(1)
-                        ? "bg-[#dbe4e6] font-semibold text-[#0b2136]"
-                        : "text-[#31526e]"
-                    }`}
-                    aria-current={
-                      activeSection === n.href.slice(1) ? "page" : undefined
-                    }
-                  >
-                    {n.label}
-                  </a>
-                </li>
-              ))}
-              <a
-                href="#contact"
-                onClick={() => setOpen(false)}
-                className="mt-2 rounded-md bg-[#153351] px-4 py-2 text-center text-sm font-medium text-white"
-              >
-                Get in touch
-              </a>
+          <div
+            className={`mobile-menu overflow-hidden border border-white/55 bg-[#e9eef0]/95 p-2 shadow-[0_16px_45px_rgba(11,33,54,0.18)] backdrop-blur-xl md:hidden ${
+              isScrolled
+                ? "mx-auto mt-2 max-w-6xl rounded-2xl"
+                : "w-full rounded-b-2xl border-x-0 border-t-0"
+            }`}
+          >
+            <ul className="grid gap-1">
+              {navItems.map((item) => {
+                const isActive = activeSection === item.href.slice(1);
+
+                return (
+                  <li key={item.href}>
+                    <a
+                      href={item.href}
+                      onClick={(event) => handleSectionClick(event, item.href)}
+                      className={`flex items-center justify-between rounded-xl px-4 py-3 text-sm transition-all ${
+                        isActive
+                          ? "bg-[#153351] font-semibold text-white"
+                          : "text-[#31526e] hover:bg-white/75 hover:text-[#0b2136]"
+                      }`}
+                      aria-current={isActive ? "location" : undefined}
+                    >
+                      <span className="flex items-center gap-2.5">
+                        <span
+                          className={`h-2 w-2 rounded-full ${
+                            isActive ? "bg-[#d98a50]" : "bg-[#7898aa]/55"
+                          }`}
+                        />
+                        {item.label}
+                      </span>
+                      <ArrowRight
+                        className={`h-4 w-4 transition-transform ${
+                          isActive ? "translate-x-0" : "-translate-x-1 opacity-45"
+                        }`}
+                      />
+                    </a>
+                  </li>
+                );
+              })}
             </ul>
           </div>
         )}
@@ -557,7 +713,7 @@ function Index() {
       {/* Hero */}
       <section
         id="home"
-        className="relative scroll-mt-24 overflow-hidden"
+        className="relative scroll-mt-20 overflow-hidden"
         style={{
           background:
             "radial-gradient(circle at 82% 18%, rgba(224,151,89,0.25), transparent 25%), radial-gradient(circle at 12% 88%, rgba(127,166,187,0.30), transparent 34%), linear-gradient(135deg, #07182a 0%, #0b2136 42%, #24445f 100%)",
@@ -626,23 +782,25 @@ function Index() {
             </div>
             <h1 className="text-4xl font-bold leading-[1.1] text-white sm:text-5xl md:text-6xl">
               Professional Websites Built by{" "}
-              <span className="text-[#d98a50]">Computer Science Students</span>{" "}
+              <span className="text-[#d98a50]">Three Web Developers</span>{" "}
               in Crete
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-relaxed text-white/[0.72]">
-              We are three Bachelor Computer Science students based in
-              Heraklion, Crete, helping businesses and individuals build modern,
-              responsive, and affordable websites.
+              Rocket3Dev is a three-person web development team based in
+              Heraklion, Crete, creating modern, responsive websites tailored to
+              the needs of businesses and professionals.
             </p>
             <div className="mt-10 flex flex-wrap gap-4">
               <a
                 href="#contact"
+                onClick={(event) => handleSectionClick(event, "#contact")}
                 className="inline-flex items-center gap-2 rounded-md bg-[#c97745] px-6 py-3 font-semibold text-[#0b2136] shadow-[0_12px_35px_rgba(224,151,89,0.25)] transition-all hover:-translate-y-0.5 hover:bg-[#d98a50] active:scale-[0.98]"
               >
                 Contact Us <ArrowRight className="h-4 w-4" />
               </a>
               <a
                 href="#services"
+                onClick={(event) => handleSectionClick(event, "#services")}
                 className="inline-flex items-center gap-2 rounded-md border border-[#7898aa]/50 bg-white/5 px-6 py-3 font-medium text-white backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:bg-white/10 active:scale-[0.98]"
               >
                 See Our Services
@@ -655,7 +813,7 @@ function Index() {
       {/* About */}
       <section
         id="about"
-        className="relative scroll-mt-24 overflow-hidden bg-[linear-gradient(180deg,#d4e0e3_0%,#dfe7e9_54%,#dfe7e9_100%)]"
+        className="relative scroll-mt-20 overflow-hidden bg-[linear-gradient(180deg,#d4e0e3_0%,#dfe7e9_54%,#dfe7e9_100%)]"
       >
         <div className="pointer-events-none absolute -left-24 top-24 h-56 w-56 rounded-full bg-[#7898aa]/10 blur-3xl" />
         <div className="ambient-dot pointer-events-none absolute left-[7%] top-[18%] h-4 w-4 rounded-full bg-[#c97745]/35" />
@@ -689,10 +847,10 @@ function Index() {
 
             <div className="space-y-5 text-[#31526e]">
               <p className="leading-relaxed">
-                We are a team of three Computer Science students who combine
-                academic knowledge with practical web development skills. We
-                focus on clean design, responsive layouts, fast websites, and
-                clear communication with clients.
+                We are a team of three web developers combining strong technical
+                knowledge with practical experience in modern web development.
+                We focus on clean design, responsive layouts, fast websites, and
+                clear communication with every client.
               </p>
               <p className="leading-relaxed">
                 Being a small team allows us to offer personal attention,
@@ -718,7 +876,7 @@ function Index() {
                     <p className="mt-3 text-sm font-semibold text-[#0b2136]">
                       {name}
                     </p>
-                    <p className="text-xs text-[#31526e]">CS Student, 23</p>
+                    <p className="text-xs text-[#31526e]">Co-founder &amp; Web Developer</p>
                   </div>
                 ))}
               </div>
@@ -730,7 +888,7 @@ function Index() {
       {/* Services */}
       <section
         id="services"
-        className="relative scroll-mt-24 overflow-hidden bg-[linear-gradient(180deg,#dfe7e9_0%,#e9eef0_55%,#dfe7e9_100%)]"
+        className="relative scroll-mt-20 overflow-hidden bg-[linear-gradient(180deg,#dfe7e9_0%,#e9eef0_55%,#dfe7e9_100%)]"
       >
         <div className="ambient-blob pointer-events-none absolute right-[5%] top-[10%] h-24 w-28 border border-[#c97745]/14" />
         <div className="ambient-ring pointer-events-none absolute right-[14%] top-[24%] h-10 w-10 rounded-full border border-[#7898aa]/22" style={{ animationDelay: "-3s" }} />
@@ -837,7 +995,7 @@ function Index() {
       {/* Portfolio */}
       <section
         id="portfolio"
-        className="relative scroll-mt-24 overflow-hidden bg-[linear-gradient(180deg,#dfe7e9_0%,#e9eef0_100%)]"
+        className="relative scroll-mt-20 overflow-hidden bg-[linear-gradient(180deg,#dfe7e9_0%,#e9eef0_100%)]"
       >
         <div className="ambient-tile pointer-events-none absolute left-[8%] top-[18%] h-7 w-7 rounded-xl border border-[#7898aa]/28 bg-[#d4e0e3]/30" />
         <div className="ambient-ring pointer-events-none absolute left-[4%] bottom-[13%] h-12 w-12 rounded-full border border-[#c97745]/15" style={{ animationDelay: "-6s" }} />
@@ -934,7 +1092,7 @@ function Index() {
       {/* Contact */}
       <section
         id="contact"
-        className="relative scroll-mt-24 overflow-hidden bg-[linear-gradient(180deg,#e9eef0_0%,#dfe7e9_100%)]"
+        className="relative scroll-mt-20 overflow-hidden bg-[linear-gradient(180deg,#e9eef0_0%,#dfe7e9_100%)]"
       >
         <div className="ambient-blob pointer-events-none absolute right-[5%] top-[11%] h-24 w-28 border border-[#7898aa]/18" />
         <div className="ambient-ring pointer-events-none absolute right-[14%] bottom-[16%] h-12 w-12 rounded-full border border-[#c97745]/15" />
@@ -968,7 +1126,8 @@ function Index() {
             </div>
           </div>
           <form
-            onSubmit={handleContactSubmit}
+            action="https://formsubmit.co/rocket3devs@gmail.com"
+            method="POST"
             className="rounded-xl border border-[#153351]/10 bg-[#f1f4f4] p-6 sm:p-8"
             style={{ boxShadow: "var(--shadow-card)" }}
           >
@@ -979,7 +1138,6 @@ function Index() {
                   required
                   name="name"
                   autoComplete="name"
-                  onChange={() => contactStatus !== "idle" && setContactStatus("idle")}
                   className="w-full rounded-md border border-[#153351]/15 bg-[#e8edef] px-3 py-2.5 text-sm outline-none transition-colors focus:border-[#c97745]"
                 />
               </div>
@@ -992,7 +1150,6 @@ function Index() {
                   type="email"
                   name="email"
                   autoComplete="email"
-                  onChange={() => contactStatus !== "idle" && setContactStatus("idle")}
                   className="w-full rounded-md border border-[#153351]/15 bg-[#e8edef] px-3 py-2.5 text-sm outline-none transition-colors focus:border-[#c97745]"
                 />
               </div>
@@ -1004,10 +1161,15 @@ function Index() {
                   required
                   name="message"
                   rows={4}
-                  onChange={() => contactStatus !== "idle" && setContactStatus("idle")}
                   className="w-full resize-none rounded-md border border-[#153351]/15 bg-[#e8edef] px-3 py-2.5 text-sm outline-none transition-colors focus:border-[#c97745]"
                 />
               </div>
+              <input
+                type="hidden"
+                name="_subject"
+                value="New Rocket3Dev website enquiry"
+              />
+              <input type="hidden" name="_template" value="table" />
               <input
                 type="text"
                 name="_honey"
@@ -1018,26 +1180,11 @@ function Index() {
               />
               <button
                 type="submit"
-                disabled={contactStatus === "sending"}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-[#c97745] px-6 py-3 font-semibold text-[#0b2136] transition-all hover:-translate-y-0.5 hover:bg-[#d98a50] disabled:cursor-wait disabled:opacity-65 disabled:hover:translate-y-0"
+                className="group inline-flex w-full items-center justify-center gap-2 rounded-md bg-[#c97745] px-6 py-3 font-semibold text-[#0b2136] transition-all hover:-translate-y-0.5 hover:bg-[#d98a50] active:scale-[0.99]"
               >
-                {contactStatus === "sending" ? "Sending..." : "Send Message"}
-                <ArrowRight className="h-4 w-4" />
+                Send Message
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </button>
-
-              <div className="min-h-6" aria-live="polite">
-                {contactStatus === "success" && (
-                  <p className="text-sm font-medium text-emerald-700">
-                    Message sent successfully. We will get back to you soon.
-                  </p>
-                )}
-                {contactStatus === "error" && (
-                  <p className="text-sm font-medium text-red-700">
-                    The message could not be sent. Please email us directly at
-                    rocket3devs@gmail.com.
-                  </p>
-                )}
-              </div>
             </div>
           </form>
         </div>
@@ -1062,6 +1209,7 @@ function Index() {
                 <li key={n.href}>
                   <a
                     href={n.href}
+                    onClick={(event) => handleSectionClick(event, n.href)}
                     className="transition-colors hover:text-white"
                   >
                     {n.label}
@@ -1074,10 +1222,7 @@ function Index() {
             <p>
               © {new Date().getFullYear()} Rocket3Dev. All rights reserved.
             </p>
-            <p>
-              Built by Aristotelis Moulas, Giannis Zaroliagkis, and Thodoris
-              Nickaris.
-            </p>
+            <p>Built by Rocket3Dev.</p>
           </div>
         </div>
       </footer>
