@@ -75,8 +75,6 @@ const translations = {
       titleBefore: "Επαγγελματικές ιστοσελίδες από",
       titleHighlight: "Τρεις Web Developers",
       titleAfter: "με έδρα την Κρήτη",
-      description:
-        "Η Rocket3Dev είναι μια τριμελής ομάδα ανάπτυξης ιστοσελίδων με έδρα το Ηράκλειο Κρήτης, που δημιουργεί σύγχρονες ιστοσελίδες προσαρμοσμένες στις ανάγκες επιχειρήσεων και επαγγελματιών.",
       primaryButton: "Επικοινωνήστε μαζί μας",
       secondaryButton: "Δείτε τις υπηρεσίες μας",
     },
@@ -84,11 +82,9 @@ const translations = {
       kicker: "About Us",
       heading: "Μικρή ομάδα. Άμεση επικοινωνία. Προσεγμένη δουλειά.",
       intro:
-        "Συνδυάζουμε ισχυρό τεχνικό υπόβαθρο με πρακτική εμπειρία στο design και το development, δημιουργώντας ιστοσελίδες σύγχρονες, ξεκάθαρες και εύχρηστες.",
+        "Σχεδιάζουμε σύγχρονες, γρήγορες και responsive ιστοσελίδες με καθαρό design και ξεκάθαρη επικοινωνία.",
       paragraphOne:
-        "Είμαστε τρεις web developers με έδρα το Ηράκλειο Κρήτης. Δημιουργούμε σύγχρονες, γρήγορες και responsive ιστοσελίδες, με έμφαση στο καθαρό design και την άμεση επικοινωνία με κάθε πελάτη.",
-      paragraphTwo:
-        "Ως μικρή ομάδα, προσφέρουμε προσωπική προσέγγιση, ευελιξία και ξεκάθαρη συνεργασία. Κάθε project αναλαμβάνεται από τους ίδιους ανθρώπους με τους οποίους επικοινωνείτε.",
+        "Είμαστε τρεις web developers με έδρα το Ηράκλειο Κρήτης. Ως μικρή ομάδα, συνεργαζόμαστε άμεσα με κάθε πελάτη και αναλαμβάνουμε προσωπικά κάθε project.",
       role: "Co-founder & Web Developer",
     },
     servicesHeading: "Ό,τι χρειάζεται η επιχείρησή σας για μια δυνατή online παρουσία.",
@@ -224,20 +220,16 @@ const translations = {
       titleBefore: "Professional Websites Built by",
       titleHighlight: "Three Web Developers",
       titleAfter: "in Crete",
-      description:
-        "Rocket3Dev is a three-person web development team based in Heraklion, Crete, creating modern, responsive websites tailored to the needs of businesses and professionals.",
       primaryButton: "Contact Us",
       secondaryButton: "See Our Services",
     },
     about: {
       kicker: "About us",
-      heading: "A small team. Full attention. Real craft.",
+      heading: "A small team. Clear communication. Thoughtful work.",
       intro:
-        "We combine Computer Science knowledge with practical design and development to build websites that feel modern, clear, and easy to use.",
+        "We design modern, fast, responsive websites with clean visuals and clear communication.",
       paragraphOne:
-        "We are a team of three web developers combining strong technical knowledge with practical experience in modern web development. We focus on clean design, responsive layouts, fast websites, and clear communication with every client.",
-      paragraphTwo:
-        "Being a small team allows us to offer personal attention, flexibility, and affordable solutions — every project is handled by the people you actually talk to.",
+        "We are three web developers based in Heraklion, Crete. As a small team, we work directly with every client and personally handle each project.",
       role: "Co-founder & Web Developer",
     },
     servicesHeading: "Everything you need to launch and grow online.",
@@ -357,6 +349,43 @@ const translations = {
     },
   },
 } as const;
+
+function HighlightText({
+  text,
+  highlights,
+  className,
+}: {
+  text: string;
+  highlights: readonly string[];
+  className: string;
+}) {
+  const escaped = [...highlights]
+    .sort((a, b) => b.length - a.length)
+    .map((value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+
+  if (escaped.length === 0) return <>{text}</>;
+
+  const parts = text.split(new RegExp(`(${escaped.join("|")})`, "gi"));
+
+  return (
+    <>
+      {parts.map((part, index) => {
+        const isHighlighted = highlights.some(
+          (highlight) =>
+            part.toLocaleLowerCase() === highlight.toLocaleLowerCase(),
+        );
+
+        return isHighlighted ? (
+          <span key={`${part}-${index}`} className={className}>
+            {part}
+          </span>
+        ) : (
+          part
+        );
+      })}
+    </>
+  );
+}
 
 function Index() {
   const [open, setOpen] = useState(false);
@@ -1069,10 +1098,7 @@ function Index() {
               <span className="text-[#d98a50]">{t.hero.titleHighlight}</span>{" "}
               {t.hero.titleAfter}
             </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-white/[0.72]">
-              {t.hero.description}
-            </p>
-            <div className="mt-10 flex flex-wrap gap-4">
+            <div className="mt-9 flex flex-wrap gap-4">
               <a
                 href="#contact"
                 onClick={(event) => handleSectionClick(event, "#contact")}
@@ -1118,21 +1144,42 @@ function Index() {
                 {t.about.kicker}
               </p>
               <h2 className="relative mt-4 text-3xl font-bold sm:text-4xl">
-                {t.about.heading}
+                <HighlightText
+                  text={t.about.heading}
+                  highlights={
+                    language === "el"
+                      ? ["Άμεση επικοινωνία"]
+                      : ["Clear communication"]
+                  }
+                  className="text-[#e6a36d]"
+                />
               </h2>
               <p className="relative mt-6 max-w-md leading-relaxed text-white/65">
-                {t.about.intro}
+                <HighlightText
+                  text={t.about.intro}
+                  highlights={
+                    language === "el"
+                      ? ["responsive ιστοσελίδες", "καθαρό design"]
+                      : ["responsive websites", "clean visuals"]
+                  }
+                  className="font-semibold text-[#e6a36d]"
+                />
               </p>
             </div>
 
-            <div className="space-y-5 text-[#31526e]">
-              <p className="leading-relaxed">
-                {t.about.paragraphOne}
+            <div className="text-[#31526e]">
+              <p className="max-w-2xl leading-relaxed">
+                <HighlightText
+                  text={t.about.paragraphOne}
+                  highlights={
+                    language === "el"
+                      ? ["τρεις web developers", "άμεσα"]
+                      : ["three web developers", "directly"]
+                  }
+                  className="font-semibold text-[#b96836]"
+                />
               </p>
-              <p className="leading-relaxed">
-                {t.about.paragraphTwo}
-              </p>
-              <div className="grid gap-4 pt-3 sm:grid-cols-3">
+              <div className="grid gap-4 pt-7 sm:grid-cols-3">
                 {[
                   "Aristotelis Moulas",
                   "Giannis Zaroliagkis",
