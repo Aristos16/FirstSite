@@ -1777,33 +1777,45 @@ function Index() {
                             <span className="h-2 w-2 rounded-full bg-white/12" />
                             <span className="ml-2 h-4 flex-1 rounded-full bg-white/[0.055]" />
                           </div>
-                          <div className="grid min-h-[150px] grid-cols-[0.38fr_1fr] gap-2 overflow-hidden rounded-xl bg-[#102d48] p-3 sm:min-h-[180px] sm:grid-cols-[0.3fr_1fr] sm:p-4">
-                            <div className="rounded-lg border border-white/8 bg-white/[0.035] p-2.5">
-                              <div className="grid h-9 w-9 place-items-center rounded-lg bg-[#d98a50] text-[#0b2136]">
-                                <p.icon className="h-[18px] w-[18px]" />
+
+                          {p.href ? (
+                            <div className="relative h-[230px] overflow-hidden rounded-xl bg-white sm:h-[300px] lg:h-[330px]">
+                              <iframe
+                                src={`${p.href}?preview=1`}
+                                title={`${p.title} interactive preview`}
+                                loading="lazy"
+                                className="absolute left-0 top-0 h-[720px] w-[312.5%] origin-top-left scale-[0.32] border-0 bg-white sm:w-[240%] sm:scale-[0.4167] lg:w-[218.2%] lg:scale-[0.4583]"
+                              />
+                            </div>
+                          ) : (
+                            <div className="grid min-h-[150px] grid-cols-[0.38fr_1fr] gap-2 overflow-hidden rounded-xl bg-[#102d48] p-3 sm:min-h-[180px] sm:grid-cols-[0.3fr_1fr] sm:p-4">
+                              <div className="rounded-lg border border-white/8 bg-white/[0.035] p-2.5">
+                                <div className="grid h-9 w-9 place-items-center rounded-lg bg-[#d98a50] text-[#0b2136]">
+                                  <p.icon className="h-[18px] w-[18px]" />
+                                </div>
+                                <div className="mt-4 space-y-2">
+                                  <div className="h-2 rounded-full bg-white/15" />
+                                  <div className="h-2 w-3/4 rounded-full bg-white/8" />
+                                  <div className="h-2 w-4/5 rounded-full bg-white/8" />
+                                </div>
                               </div>
-                              <div className="mt-4 space-y-2">
-                                <div className="h-2 rounded-full bg-white/15" />
-                                <div className="h-2 w-3/4 rounded-full bg-white/8" />
-                                <div className="h-2 w-4/5 rounded-full bg-white/8" />
+                              <div className="grid gap-2.5 sm:grid-cols-2">
+                                <div className="flex flex-col justify-between rounded-lg border border-white/8 bg-white/[0.04] p-3 sm:col-span-2">
+                                  <div className="h-2.5 w-24 rounded-full bg-[#d98a50]/70" />
+                                  <div className="mt-3 h-3 w-4/5 rounded-full bg-white/16" />
+                                  <div className="mt-2 h-2 w-3/5 rounded-full bg-white/8" />
+                                </div>
+                                <div className="rounded-lg border border-white/8 bg-white/[0.035] p-3">
+                                  <div className="h-10 rounded-md bg-[#d98a50]/12" />
+                                  <div className="mt-2 h-2 w-3/4 rounded-full bg-white/10" />
+                                </div>
+                                <div className="rounded-lg border border-white/8 bg-white/[0.035] p-3">
+                                  <div className="h-10 rounded-md bg-[#7898aa]/14" />
+                                  <div className="mt-2 h-2 w-2/3 rounded-full bg-white/10" />
+                                </div>
                               </div>
                             </div>
-                            <div className="grid gap-2.5 sm:grid-cols-2">
-                              <div className="flex flex-col justify-between rounded-lg border border-white/8 bg-white/[0.04] p-3 sm:col-span-2">
-                                <div className="h-2.5 w-24 rounded-full bg-[#d98a50]/70" />
-                                <div className="mt-3 h-3 w-4/5 rounded-full bg-white/16" />
-                                <div className="mt-2 h-2 w-3/5 rounded-full bg-white/8" />
-                              </div>
-                              <div className="rounded-lg border border-white/8 bg-white/[0.035] p-3">
-                                <div className="h-10 rounded-md bg-[#d98a50]/12" />
-                                <div className="mt-2 h-2 w-3/4 rounded-full bg-white/10" />
-                              </div>
-                              <div className="rounded-lg border border-white/8 bg-white/[0.035] p-3">
-                                <div className="h-10 rounded-md bg-[#7898aa]/14" />
-                                <div className="mt-2 h-2 w-2/3 rounded-full bg-white/10" />
-                              </div>
-                            </div>
-                          </div>
+                          )}
                         </div>
 
                         {p.href ? (

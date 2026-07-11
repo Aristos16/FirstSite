@@ -10,7 +10,7 @@ import {
   Star,
   X,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 
 export const Route = createFileRoute("/gym-demo")({
   head: () => ({
@@ -63,12 +63,68 @@ const memberships = [
 function GymDemo() {
   const [open, setOpen] = useState(false);
 
+  useEffect(() => {
+    const isEmbeddedPreview =
+      new URLSearchParams(window.location.search).get("preview") === "1";
+
+    if (!isEmbeddedPreview) return;
+
+    document.documentElement.classList.add("gym-demo-preview");
+    document.body.classList.add("gym-demo-preview");
+
+    return () => {
+      document.documentElement.classList.remove("gym-demo-preview");
+      document.body.classList.remove("gym-demo-preview");
+    };
+  }, []);
+
+  function handleSectionNavigation(
+    event: MouseEvent<HTMLAnchorElement>,
+    sectionId: string,
+  ) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const section = document.getElementById(sectionId);
+    if (!section) return;
+
+    const header = document.querySelector("header");
+    const headerHeight = header?.getBoundingClientRect().height ?? 0;
+    const targetTop =
+      section.getBoundingClientRect().top + window.scrollY - headerHeight - 8;
+
+    window.scrollTo({
+      top: Math.max(0, targetTop),
+      behavior: "smooth",
+    });
+
+    setOpen(false);
+  }
+
   return (
     <div className="min-h-screen bg-[#070b12] text-white">
+      <style>{`
+        html.gym-demo-preview,
+        body.gym-demo-preview {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+
+        html.gym-demo-preview::-webkit-scrollbar,
+        body.gym-demo-preview::-webkit-scrollbar {
+          display: none;
+          width: 0;
+          height: 0;
+        }
+      `}</style>
       {/* Navbar */}
       <header className="sticky top-0 z-50 border-b border-white/10 bg-[#070b12]/85 backdrop-blur-md">
         <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <a href="#home" className="flex items-center gap-2 font-bold">
+          <a
+            href="#home"
+            onClick={(event) => handleSectionNavigation(event, "home")}
+            className="flex items-center gap-2 font-bold"
+          >
             <span className="grid h-9 w-9 place-items-center rounded-lg bg-lime-400 text-black">
               <Dumbbell className="h-5 w-5" />
             </span>
@@ -77,17 +133,29 @@ function GymDemo() {
 
           <ul className="hidden items-center gap-8 md:flex">
             <li>
-              <a href="#classes" className="text-sm text-white/70 hover:text-white">
+              <a
+                href="#classes"
+                onClick={(event) => handleSectionNavigation(event, "classes")}
+                className="text-sm text-white/70 hover:text-white"
+              >
                 Classes
               </a>
             </li>
             <li>
-              <a href="#memberships" className="text-sm text-white/70 hover:text-white">
+              <a
+                href="#memberships"
+                onClick={(event) => handleSectionNavigation(event, "memberships")}
+                className="text-sm text-white/70 hover:text-white"
+              >
                 Memberships
               </a>
             </li>
             <li>
-              <a href="#contact" className="text-sm text-white/70 hover:text-white">
+              <a
+                href="#contact"
+                onClick={(event) => handleSectionNavigation(event, "contact")}
+                className="text-sm text-white/70 hover:text-white"
+              >
                 Contact
               </a>
             </li>
@@ -108,13 +176,25 @@ function GymDemo() {
         {open && (
           <div className="border-t border-white/10 px-6 py-4 md:hidden">
             <div className="flex flex-col gap-3">
-              <a onClick={() => setOpen(false)} href="#classes" className="text-white/70">
+              <a
+                href="#classes"
+                onClick={(event) => handleSectionNavigation(event, "classes")}
+                className="text-white/70"
+              >
                 Classes
               </a>
-              <a onClick={() => setOpen(false)} href="#memberships" className="text-white/70">
+              <a
+                href="#memberships"
+                onClick={(event) => handleSectionNavigation(event, "memberships")}
+                className="text-white/70"
+              >
                 Memberships
               </a>
-              <a onClick={() => setOpen(false)} href="#contact" className="text-white/70">
+              <a
+                href="#contact"
+                onClick={(event) => handleSectionNavigation(event, "contact")}
+                className="text-white/70"
+              >
                 Contact
               </a>
               <a onClick={() => setOpen(false)} href="/register" className="text-lime-300">
