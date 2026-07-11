@@ -1708,30 +1708,30 @@ function Index() {
               return (
                 <article
                   key={p.title}
-                  role={isActive ? undefined : "button"}
-                  tabIndex={isActive ? undefined : 0}
-                  aria-pressed={isActive ? undefined : false}
-                  onClick={
-                    isActive
-                      ? undefined
-                      : () => setActivePortfolioIndex(index)
-                  }
-                  onKeyDown={
-                    isActive
-                      ? undefined
-                      : (event) => {
-                          if (event.key === "Enter" || event.key === " ") {
-                            event.preventDefault();
-                            setActivePortfolioIndex(index);
-                          }
-                        }
-                  }
                   className={`group relative overflow-hidden rounded-[1.75rem] transition-all duration-500 sm:p-7 lg:p-8 ${
                     isActive
                       ? "border border-white/10 bg-[#0b2136] p-5 text-white shadow-[0_24px_70px_rgba(11,33,54,0.18)]"
-                      : "cursor-pointer border border-[#153351]/10 bg-[#f1f4f4] p-5 shadow-[0_14px_42px_rgba(11,33,54,0.08)] hover:-translate-y-1 hover:border-[#c97745]/42 hover:shadow-[0_20px_48px_rgba(11,33,54,0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c97745]/70 focus-visible:ring-offset-2 lg:min-h-[430px]"
+                      : "border border-[#153351]/10 bg-[#f1f4f4] p-5 shadow-[0_14px_42px_rgba(11,33,54,0.08)] hover:-translate-y-1 hover:border-[#c97745]/42 hover:shadow-[0_20px_48px_rgba(11,33,54,0.12)] lg:min-h-[430px]"
                   }`}
                 >
+                  {!isActive && (
+                    <button
+                      type="button"
+                      onClick={() => setActivePortfolioIndex(index)}
+                      aria-label={
+                        language === "el"
+                          ? `Προβολή ${p.title}`
+                          : `View ${p.title}`
+                      }
+                      className="absolute inset-0 z-20 cursor-pointer rounded-[1.75rem] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c97745]/70 focus-visible:ring-inset"
+                    >
+                      <span className="sr-only">
+                        {language === "el"
+                          ? `Προβολή ${p.title}`
+                          : `View ${p.title}`}
+                      </span>
+                    </button>
+                  )}
                   {isActive ? (
                     <>
                       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_86%_12%,rgba(217,138,80,0.18),transparent_26%),radial-gradient(circle_at_8%_90%,rgba(120,152,170,0.18),transparent_30%)]" />
@@ -1992,10 +1992,14 @@ function Index() {
             >
               <div className="space-y-4">
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium">
+                  <label
+                    htmlFor="contact-name"
+                    className="mb-1.5 block text-sm font-medium"
+                  >
                     {t.contact.name}
                   </label>
                   <input
+                    id="contact-name"
                     required
                     name="name"
                     autoComplete="name"
@@ -2003,10 +2007,14 @@ function Index() {
                   />
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium">
+                  <label
+                    htmlFor="contact-email"
+                    className="mb-1.5 block text-sm font-medium"
+                  >
                     {t.contact.email}
                   </label>
                   <input
+                    id="contact-email"
                     required
                     type="email"
                     name="email"
@@ -2015,10 +2023,14 @@ function Index() {
                   />
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium">
+                  <label
+                    htmlFor="contact-message"
+                    className="mb-1.5 block text-sm font-medium"
+                  >
                     {t.contact.message}
                   </label>
                   <textarea
+                    id="contact-message"
                     required
                     name="message"
                     rows={4}
