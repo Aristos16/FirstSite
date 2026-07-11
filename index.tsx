@@ -31,7 +31,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Rocket3Dev is a three-person web development team in Heraklion, Crete, creating modern, responsive websites for businesses and professionals.",
+          "Η Rocket3Dev είναι μια τριμελής ομάδα ανάπτυξης ιστοσελίδων στο Ηράκλειο Κρήτης, που δημιουργεί σύγχρονες ιστοσελίδες για επιχειρήσεις και επαγγελματίες.",
       },
       {
         property: "og:title",
@@ -40,109 +40,349 @@ export const Route = createFileRoute("/")({
       {
         property: "og:description",
         content:
-          "Modern, responsive websites by Rocket3Dev, a three-person web development team based in Heraklion, Crete.",
+          "Σύγχρονες ιστοσελίδες από τη Rocket3Dev, μια τριμελή ομάδα ανάπτυξης ιστοσελίδων με έδρα το Ηράκλειο Κρήτης.",
       },
     ],
   }),
   component: Index,
 });
 
-const services = [
-  {
-    icon: Briefcase,
-    title: "Business Websites",
-    desc: "Professional sites that establish credibility and convert visitors into customers.",
-  },
-  {
-    icon: User,
-    title: "Personal Portfolios",
-    desc: "Showcase your work, skills, and story with a site that stands out.",
-  },
-  {
-    icon: Store,
-    title: "Restaurants, Cafes & Shops",
-    desc: "Menus, hours, bookings — everything your local customers need.",
-  },
-  {
-    icon: Layout,
-    title: "Landing Pages",
-    desc: "Focused, high-converting pages for products, launches, and campaigns.",
-  },
-  {
-    icon: RefreshCw,
-    title: "Website Redesigns",
-    desc: "Modernize an outdated site with a fresh look and better performance.",
-  },
-  {
-    icon: Smartphone,
-    title: "Responsive Design",
-    desc: "Every site looks flawless on phones, tablets, and desktops.",
-  },
-];
-
-const process = [
-  {
-    icon: MessageCircle,
-    title: "Tell us your idea",
-    desc: "We learn what you need and what style fits your business.",
-  },
-  {
-    icon: PencilRuler,
-    title: "See the direction",
-    desc: "We shape the layout and agree on a clear visual plan.",
-  },
-  {
-    icon: Code2,
-    title: "Watch it take shape",
-    desc: "We build the site and share progress along the way.",
-  },
-  {
-    icon: Rocket,
-    title: "Ready for launch",
-    desc: "We complete the final checks and put your website online.",
-  },
-];
-
-const portfolio = [
-  {
-    icon: Dumbbell,
-    title: "Gym Website Demo",
-    tag: "Fitness",
-    desc: "A modern gym website with memberships, classes, member accounts, and bookings.",
-    href: "/gym-demo",
-  },
-  {
-    icon: Coffee,
-    title: "Cafe Website Demo",
-    tag: "Hospitality",
-    desc: "A compact cafe concept for menu highlights, location, opening hours, and contact details.",
-  },
-];
-
-const reasons = [
-  { icon: Code2, title: "Computer Science background" },
-  { icon: Zap, title: "Young and motivated team" },
-  { icon: MapPin, title: "Based in Heraklion, Crete" },
-  { icon: Heart, title: "Affordable pricing" },
-  { icon: Smartphone, title: "Mobile-friendly websites" },
-  { icon: Users, title: "Personal communication" },
-  { icon: Rocket, title: "Fast and clean design" },
-];
+type Language = "el" | "en";
 
 const navItems = [
-  { label: "Home", href: "#home" },
-  { label: "About", href: "#about" },
-  { label: "Services", href: "#services" },
-  { label: "Portfolio", href: "#portfolio" },
-  { label: "Contact", href: "#contact" },
-];
+  { id: "home", href: "#home" },
+  { id: "about", href: "#about" },
+  { id: "services", href: "#services" },
+  { id: "portfolio", href: "#portfolio" },
+  { id: "contact", href: "#contact" },
+] as const;
+
+const translations = {
+  el: {
+    nav: {
+      home: "Αρχική",
+      about: "About Us",
+      services: "Υπηρεσίες",
+      portfolio: "Portfolio",
+      contact: "Επικοινωνία",
+    },
+    menuLabel: "Μενού",
+    switchToGreek: "Αλλαγή στα Ελληνικά",
+    switchToEnglish: "Switch to English",
+    startProject: "Μιλήστε μαζί μας",
+    hero: {
+      eyebrow: "Web studio με έδρα το Ηράκλειο Κρήτης",
+      titleBefore: "Επαγγελματικές ιστοσελίδες από",
+      titleHighlight: "Τρεις Web Developers",
+      titleAfter: "με έδρα την Κρήτη",
+      description:
+        "Η Rocket3Dev είναι μια τριμελής ομάδα ανάπτυξης ιστοσελίδων με έδρα το Ηράκλειο Κρήτης, που δημιουργεί σύγχρονες ιστοσελίδες προσαρμοσμένες στις ανάγκες επιχειρήσεων και επαγγελματιών.",
+      primaryButton: "Επικοινωνήστε μαζί μας",
+      secondaryButton: "Δείτε τις υπηρεσίες μας",
+    },
+    about: {
+      kicker: "About Us",
+      heading: "Μικρή ομάδα. Άμεση επικοινωνία. Προσεγμένη δουλειά.",
+      intro:
+        "Συνδυάζουμε ισχυρό τεχνικό υπόβαθρο με πρακτική εμπειρία στο design και το development, δημιουργώντας ιστοσελίδες σύγχρονες, ξεκάθαρες και εύχρηστες.",
+      paragraphOne:
+        "Είμαστε τρεις web developers με έδρα το Ηράκλειο Κρήτης. Δημιουργούμε σύγχρονες, γρήγορες και responsive ιστοσελίδες, με έμφαση στο καθαρό design και την άμεση επικοινωνία με κάθε πελάτη.",
+      paragraphTwo:
+        "Ως μικρή ομάδα, προσφέρουμε προσωπική προσέγγιση, ευελιξία και ξεκάθαρη συνεργασία. Κάθε project αναλαμβάνεται από τους ίδιους ανθρώπους με τους οποίους επικοινωνείτε.",
+      role: "Co-founder & Web Developer",
+    },
+    servicesHeading: "Ό,τι χρειάζεται η επιχείρησή σας για μια δυνατή online παρουσία.",
+    servicesKicker: "Υπηρεσίες",
+    services: [
+      {
+        icon: Briefcase,
+        title: "Business Websites",
+        desc: "Επαγγελματικές ιστοσελίδες που ενισχύουν την αξιοπιστία σας και μετατρέπουν τους επισκέπτες σε πελάτες.",
+      },
+      {
+        icon: User,
+        title: "Portfolios",
+        desc: "Παρουσιάστε τη δουλειά, τις δεξιότητες και την επαγγελματική σας ταυτότητα μέσα από ένα σύγχρονο portfolio website.",
+      },
+      {
+        icon: Store,
+        title: "Εστίαση & Καταστήματα",
+        desc: "Μενού, ωράρια, κρατήσεις και όλες οι πληροφορίες που χρειάζονται οι πελάτες σας.",
+      },
+      {
+        icon: Layout,
+        title: "Landing Pages",
+        desc: "Στοχευμένες σελίδες για προϊόντα, νέες κυκλοφορίες και καμπάνιες, σχεδιασμένες για ξεκάθαρα αποτελέσματα.",
+      },
+      {
+        icon: RefreshCw,
+        title: "Website Redesign",
+        desc: "Ανανεώνουμε μια παλιά ιστοσελίδα με σύγχρονη εμφάνιση, καλύτερη εμπειρία χρήστη και απόδοση.",
+      },
+      {
+        icon: Smartphone,
+        title: "Responsive Design",
+        desc: "Κάθε ιστοσελίδα λειτουργεί και δείχνει άψογα σε κινητά, tablets και υπολογιστές.",
+      },
+    ],
+    process: {
+      kicker: "How we work",
+      heading: "Από την πρώτη συζήτηση μέχρι το launch, όλα ξεκάθαρα.",
+      description:
+        "Μια απλή διαδικασία τεσσάρων βημάτων, ώστε να γνωρίζετε πάντα τι ακολουθεί.",
+      steps: [
+        {
+          icon: MessageCircle,
+          title: "Μας λέτε τι χρειάζεστε",
+          desc: "Μαθαίνουμε τι χρειάζεστε και ποιο ύφος ταιριάζει στην επιχείρησή σας.",
+        },
+        {
+          icon: PencilRuler,
+          title: "Σχεδιάζουμε την κατεύθυνση",
+          desc: "Οργανώνουμε τη δομή και συμφωνούμε σε ένα ξεκάθαρο οπτικό πλάνο.",
+        },
+        {
+          icon: Code2,
+          title: "Χτίζουμε την ιστοσελίδα",
+          desc: "Αναπτύσσουμε την ιστοσελίδα και σας ενημερώνουμε για την πρόοδο σε κάθε στάδιο.",
+        },
+        {
+          icon: Rocket,
+          title: "Έτοιμοι για launch",
+          desc: "Ολοκληρώνουμε τους τελικούς ελέγχους και δημοσιεύουμε την ιστοσελίδα σας.",
+        },
+      ],
+    },
+    portfolio: {
+      kicker: "Portfolio",
+      heading: "Δείτε μερικά demo projects.",
+      description:
+        "Δύο demo concepts που δείχνουν το ύφος και τις δυνατότητες των ιστοσελίδων που μπορούμε να δημιουργήσουμε.",
+      openDemo: "Δείτε το demo",
+      comingSoon: "Coming soon",
+      items: [
+        {
+          icon: Dumbbell,
+          title: "Gym Website Demo",
+          tag: "Gym / Fitness",
+          desc: "Μια σύγχρονη ιστοσελίδα γυμναστηρίου με συνδρομές, μαθήματα, λογαριασμούς μελών και κρατήσεις.",
+          href: "/gym-demo",
+        },
+        {
+          icon: Coffee,
+          title: "Cafe Website Demo",
+          tag: "Cafe / Hospitality",
+          desc: "Ένα compact concept για καφέ με μενού, τοποθεσία, ωράριο λειτουργίας και στοιχεία επικοινωνίας.",
+        },
+      ],
+    },
+    reasons: {
+      kicker: "Why Rocket3Dev",
+      heading: "Μικρή ομάδα, άμεση συνεργασία και προσεγμένο αποτέλεσμα.",
+      items: [
+        { icon: Code2, title: "Ισχυρό τεχνικό υπόβαθρο" },
+        { icon: Zap, title: "Μικρή και ευέλικτη ομάδα" },
+        { icon: MapPin, title: "Με έδρα το Ηράκλειο" },
+        { icon: Heart, title: "Ξεκάθαρη κοστολόγηση" },
+        { icon: Smartphone, title: "Mobile-first σχεδιασμός" },
+        { icon: Users, title: "Άμεση επικοινωνία" },
+        { icon: Rocket, title: "Καθαρό και σύγχρονο design" },
+      ],
+    },
+    contact: {
+      kicker: "Contact",
+      heading: "Ας μιλήσουμε για το project σας.",
+      description:
+        "Πείτε μας τι έχετε στο μυαλό σας και θα σας προτείνουμε το κατάλληλο επόμενο βήμα για την online παρουσία της επιχείρησής σας.",
+      location: "Ηράκλειο, Κρήτη, Ελλάδα",
+      name: "Όνομα",
+      email: "Email",
+      message: "Μήνυμα",
+      send: "Στείλτε το μήνυμα",
+      subject: "Νέο αίτημα από την ιστοσελίδα Rocket3Dev",
+    },
+    footer: {
+      location: "Ηράκλειο, Κρήτη · Ελλάδα",
+      rights: "Όλα τα δικαιώματα διατηρούνται.",
+      builtBy: "Built by Rocket3Dev.",
+    },
+  },
+  en: {
+    nav: {
+      home: "Home",
+      about: "About",
+      services: "Services",
+      portfolio: "Portfolio",
+      contact: "Contact",
+    },
+    menuLabel: "Menu",
+    switchToGreek: "Switch to Greek",
+    switchToEnglish: "Switch to English",
+    startProject: "Start a project",
+    hero: {
+      eyebrow: "A small web studio in Heraklion, Crete",
+      titleBefore: "Professional Websites Built by",
+      titleHighlight: "Three Web Developers",
+      titleAfter: "in Crete",
+      description:
+        "Rocket3Dev is a three-person web development team based in Heraklion, Crete, creating modern, responsive websites tailored to the needs of businesses and professionals.",
+      primaryButton: "Contact Us",
+      secondaryButton: "See Our Services",
+    },
+    about: {
+      kicker: "About us",
+      heading: "A small team. Full attention. Real craft.",
+      intro:
+        "We combine Computer Science knowledge with practical design and development to build websites that feel modern, clear, and easy to use.",
+      paragraphOne:
+        "We are a team of three web developers combining strong technical knowledge with practical experience in modern web development. We focus on clean design, responsive layouts, fast websites, and clear communication with every client.",
+      paragraphTwo:
+        "Being a small team allows us to offer personal attention, flexibility, and affordable solutions — every project is handled by the people you actually talk to.",
+      role: "Co-founder & Web Developer",
+    },
+    servicesHeading: "Everything you need to launch and grow online.",
+    servicesKicker: "Services",
+    services: [
+      {
+        icon: Briefcase,
+        title: "Business Websites",
+        desc: "Professional sites that establish credibility and convert visitors into customers.",
+      },
+      {
+        icon: User,
+        title: "Personal Portfolios",
+        desc: "Showcase your work, skills, and story with a site that stands out.",
+      },
+      {
+        icon: Store,
+        title: "Restaurants, Cafes & Shops",
+        desc: "Menus, hours, bookings — everything your local customers need.",
+      },
+      {
+        icon: Layout,
+        title: "Landing Pages",
+        desc: "Focused, high-converting pages for products, launches, and campaigns.",
+      },
+      {
+        icon: RefreshCw,
+        title: "Website Redesigns",
+        desc: "Modernize an outdated site with a fresh look and better performance.",
+      },
+      {
+        icon: Smartphone,
+        title: "Responsive Design",
+        desc: "Every site looks flawless on phones, tablets, and desktops.",
+      },
+    ],
+    process: {
+      kicker: "How we work",
+      heading: "From idea to website, without the confusion.",
+      description:
+        "A friendly four-step process that keeps everything clear and easy to follow.",
+      steps: [
+        {
+          icon: MessageCircle,
+          title: "Tell us your idea",
+          desc: "We learn what you need and what style fits your business.",
+        },
+        {
+          icon: PencilRuler,
+          title: "See the direction",
+          desc: "We shape the layout and agree on a clear visual plan.",
+        },
+        {
+          icon: Code2,
+          title: "Watch it take shape",
+          desc: "We build the site and share progress along the way.",
+        },
+        {
+          icon: Rocket,
+          title: "Ready for launch",
+          desc: "We complete the final checks and put your website online.",
+        },
+      ],
+    },
+    portfolio: {
+      kicker: "Portfolio",
+      heading: "A couple of demo websites.",
+      description:
+        "Small examples of the type of modern websites we can create for local businesses.",
+      openDemo: "Open demo",
+      comingSoon: "Demo coming soon",
+      items: [
+        {
+          icon: Dumbbell,
+          title: "Gym Website Demo",
+          tag: "Gym / Fitness",
+          desc: "A modern gym website with memberships, classes, member accounts, and bookings.",
+          href: "/gym-demo",
+        },
+        {
+          icon: Coffee,
+          title: "Cafe Website Demo",
+          tag: "Hospitality",
+          desc: "A compact cafe concept for menu highlights, location, opening hours, and contact details.",
+        },
+      ],
+    },
+    reasons: {
+      kicker: "Why choose us",
+      heading: "Small enough to care. Skilled enough to deliver.",
+      items: [
+        { icon: Code2, title: "Computer Science background" },
+        { icon: Zap, title: "Young and motivated team" },
+        { icon: MapPin, title: "Based in Heraklion, Crete" },
+        { icon: Heart, title: "Affordable pricing" },
+        { icon: Smartphone, title: "Mobile-friendly websites" },
+        { icon: Users, title: "Personal communication" },
+        { icon: Rocket, title: "Fast and clean design" },
+      ],
+    },
+    contact: {
+      kicker: "Contact",
+      heading: "Let's build something great.",
+      description:
+        "Have an idea for a website? Contact us and we will help you turn it into a professional online presence.",
+      location: "Heraklion, Crete, Greece",
+      name: "Name",
+      email: "Email",
+      message: "Message",
+      send: "Send Message",
+      subject: "New Rocket3Dev website enquiry",
+    },
+    footer: {
+      location: "Heraklion, Crete · Greece",
+      rights: "All rights reserved.",
+      builtBy: "Built by Rocket3Dev.",
+    },
+  },
+} as const;
 
 function Index() {
   const [open, setOpen] = useState(false);
+  const [language, setLanguage] = useState<Language>("el");
   const [activeSection, setActiveSection] = useState("home");
   const [isScrolled, setIsScrolled] = useState(false);
   const isProgrammaticScroll = useRef(false);
   const scrollAnimationFrame = useRef<number | null>(null);
+  const t = translations[language];
+
+  useEffect(() => {
+    const savedLanguage = window.localStorage.getItem("rocket3dev-language");
+    if (savedLanguage === "el" || savedLanguage === "en") {
+      setLanguage(savedLanguage);
+      document.documentElement.lang = savedLanguage;
+    } else {
+      document.documentElement.lang = "el";
+    }
+  }, []);
+
+  function changeLanguage(nextLanguage: Language) {
+    setLanguage(nextLanguage);
+    setOpen(false);
+    document.documentElement.lang = nextLanguage;
+    window.localStorage.setItem("rocket3dev-language", nextLanguage);
+  }
 
   useEffect(() => {
     const elements = document.querySelectorAll<HTMLElement>("[data-reveal]");
@@ -633,7 +873,7 @@ function Index() {
                         isActive ? "scale-100 opacity-100" : "scale-50 opacity-0"
                       }`}
                     />
-                    {item.label}
+                    {t.nav[item.id]}
                   </a>
                 </li>
               );
@@ -641,14 +881,36 @@ function Index() {
           </ul>
 
           <div className="hidden items-center gap-2 md:flex">
+            <div
+              className="flex items-center rounded-full border border-[#153351]/10 bg-[#dbe4e6]/80 p-1 shadow-sm"
+              role="group"
+              aria-label={language === "el" ? t.switchToEnglish : t.switchToGreek}
+            >
+              {(["el", "en"] as const).map((code) => (
+                <button
+                  key={code}
+                  type="button"
+                  onClick={() => changeLanguage(code)}
+                  className={`rounded-full px-2.5 py-1 text-[11px] font-bold tracking-wide transition-all ${
+                    language === code
+                      ? "bg-[#153351] text-white shadow-sm"
+                      : "text-[#31526e] hover:bg-white/70"
+                  }`}
+                  aria-pressed={language === code}
+                >
+                  {code === "el" ? "ΕΛ" : "EN"}
+                </button>
+              ))}
+            </div>
+
             <a
               href="#contact"
               onClick={(event) => handleSectionClick(event, "#contact")}
-              className={`group inline-flex items-center gap-2 rounded-full bg-[#c97745] text-sm font-semibold text-[#0b2136] shadow-[0_8px_24px_rgba(201,119,69,0.22)] transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:bg-[#d98a50] active:scale-[0.98] ${
+              className={`group hidden items-center gap-2 rounded-full lg:inline-flex bg-[#c97745] text-sm font-semibold text-[#0b2136] shadow-[0_8px_24px_rgba(201,119,69,0.22)] transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:bg-[#d98a50] active:scale-[0.98] ${
                 isScrolled ? "px-3.5 py-1.5" : "px-5 py-2.5"
               }`}
             >
-              Start a project
+              {t.startProject}
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </a>
           </div>
@@ -656,7 +918,7 @@ function Index() {
           <button
             onClick={() => setOpen(!open)}
             className="grid h-10 w-10 place-items-center rounded-full border border-[#153351]/10 bg-[#dbe4e6]/80 text-[#153351] transition-all hover:rotate-3 hover:bg-white md:hidden"
-            aria-label="Menu"
+            aria-label={t.menuLabel}
             aria-expanded={open}
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -672,6 +934,28 @@ function Index() {
                 : "w-full rounded-b-2xl border-x-0 border-t-0"
             }`}
           >
+            <div className="mb-2 flex items-center justify-between rounded-xl bg-white/55 px-3 py-2">
+              <span className="text-xs font-semibold text-[#31526e]">
+                {language === "el" ? "Γλώσσα" : "Language"}
+              </span>
+              <div className="flex rounded-full border border-[#153351]/10 bg-[#dbe4e6]/80 p-1">
+                {(["el", "en"] as const).map((code) => (
+                  <button
+                    key={code}
+                    type="button"
+                    onClick={() => changeLanguage(code)}
+                    className={`rounded-full px-3 py-1 text-xs font-bold transition-all ${
+                      language === code
+                        ? "bg-[#153351] text-white"
+                        : "text-[#31526e]"
+                    }`}
+                    aria-pressed={language === code}
+                  >
+                    {code === "el" ? "ΕΛ" : "EN"}
+                  </button>
+                ))}
+              </div>
+            </div>
             <ul className="grid gap-1">
               {navItems.map((item) => {
                 const isActive = activeSection === item.href.slice(1);
@@ -694,7 +978,7 @@ function Index() {
                             isActive ? "bg-[#d98a50]" : "bg-[#7898aa]/55"
                           }`}
                         />
-                        {item.label}
+                        {t.nav[item.id]}
                       </span>
                       <ArrowRight
                         className={`h-4 w-4 transition-transform ${
@@ -778,17 +1062,15 @@ function Index() {
           <div className="max-w-3xl animate-fade-up">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#c97745]/35 bg-white/5 px-3 py-1 text-xs font-medium text-[#d4e0e3] backdrop-blur-sm">
               <span className="h-1.5 w-1.5 rounded-full bg-[#c97745] shadow-[0_0_12px_rgba(224,151,89,0.9)]" />
-              A small web studio in Heraklion, Crete
+              {t.hero.eyebrow}
             </div>
             <h1 className="text-4xl font-bold leading-[1.1] text-white sm:text-5xl md:text-6xl">
-              Professional Websites Built by{" "}
-              <span className="text-[#d98a50]">Three Web Developers</span>{" "}
-              in Crete
+              {t.hero.titleBefore}{" "}
+              <span className="text-[#d98a50]">{t.hero.titleHighlight}</span>{" "}
+              {t.hero.titleAfter}
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-relaxed text-white/[0.72]">
-              Rocket3Dev is a three-person web development team based in
-              Heraklion, Crete, creating modern, responsive websites tailored to
-              the needs of businesses and professionals.
+              {t.hero.description}
             </p>
             <div className="mt-10 flex flex-wrap gap-4">
               <a
@@ -796,14 +1078,14 @@ function Index() {
                 onClick={(event) => handleSectionClick(event, "#contact")}
                 className="inline-flex items-center gap-2 rounded-md bg-[#c97745] px-6 py-3 font-semibold text-[#0b2136] shadow-[0_12px_35px_rgba(224,151,89,0.25)] transition-all hover:-translate-y-0.5 hover:bg-[#d98a50] active:scale-[0.98]"
               >
-                Contact Us <ArrowRight className="h-4 w-4" />
+                {t.hero.primaryButton} <ArrowRight className="h-4 w-4" />
               </a>
               <a
                 href="#services"
                 onClick={(event) => handleSectionClick(event, "#services")}
                 className="inline-flex items-center gap-2 rounded-md border border-[#7898aa]/50 bg-white/5 px-6 py-3 font-medium text-white backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:bg-white/10 active:scale-[0.98]"
               >
-                See Our Services
+                {t.hero.secondaryButton}
               </a>
             </div>
           </div>
@@ -833,29 +1115,22 @@ function Index() {
               <div className="ambient-tile absolute right-5 top-20 h-16 w-16 rounded-2xl border border-[#c97745]/18" style={{ animationDelay: "-5s" }} />
               <Rocket className="absolute bottom-7 right-7 h-24 w-24 rotate-12 text-white/[0.05]" />
               <p className="section-kicker section-kicker-dark relative">
-                About us
+                {t.about.kicker}
               </p>
               <h2 className="relative mt-4 text-3xl font-bold sm:text-4xl">
-                A small team. Full attention. Real craft.
+                {t.about.heading}
               </h2>
               <p className="relative mt-6 max-w-md leading-relaxed text-white/65">
-                We combine Computer Science knowledge with practical design and
-                development to build websites that feel modern, clear, and easy
-                to use.
+                {t.about.intro}
               </p>
             </div>
 
             <div className="space-y-5 text-[#31526e]">
               <p className="leading-relaxed">
-                We are a team of three web developers combining strong technical
-                knowledge with practical experience in modern web development.
-                We focus on clean design, responsive layouts, fast websites, and
-                clear communication with every client.
+                {t.about.paragraphOne}
               </p>
               <p className="leading-relaxed">
-                Being a small team allows us to offer personal attention,
-                flexibility, and affordable solutions — every project is handled
-                by the people you actually talk to.
+                {t.about.paragraphTwo}
               </p>
               <div className="grid gap-4 pt-3 sm:grid-cols-3">
                 {[
@@ -876,7 +1151,7 @@ function Index() {
                     <p className="mt-3 text-sm font-semibold text-[#0b2136]">
                       {name}
                     </p>
-                    <p className="text-xs text-[#31526e]">Co-founder &amp; Web Developer</p>
+                    <p className="text-xs text-[#31526e]">{t.about.role}</p>
                   </div>
                 ))}
               </div>
@@ -902,14 +1177,14 @@ function Index() {
         <div data-reveal className="relative mx-auto max-w-6xl px-6 py-24">
           <div className="mb-14 max-w-2xl">
             <p className="section-kicker">
-              Services
+              {t.servicesKicker}
             </p>
             <h2 className="mt-4 text-3xl font-bold sm:text-4xl">
-              Everything you need to launch and grow online.
+              {t.servicesHeading}
             </h2>
           </div>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {services.map((s) => (
+            {t.services.map((s) => (
               <div
                 key={s.title}
                 className="group rounded-xl border border-[#153351]/10 bg-[#f1f4f4] p-6 transition-all duration-300 hover:-translate-y-1.5 hover:border-[#c97745] hover:shadow-[0_18px_45px_rgba(11,33,54,0.12)]"
@@ -949,14 +1224,13 @@ function Index() {
           >
             <div className="mx-auto mb-14 max-w-2xl text-center">
               <p className="process-kicker section-kicker section-kicker-dark justify-center">
-                How we work
+                {t.process.kicker}
               </p>
               <h2 className="mt-4 text-3xl font-bold sm:text-4xl">
-                From idea to website, without the confusion.
+                {t.process.heading}
               </h2>
               <p className="mt-4 text-white/60">
-                A friendly four-step process that keeps everything clear and easy
-                to follow.
+                {t.process.description}
               </p>
             </div>
 
@@ -967,7 +1241,7 @@ function Index() {
               />
 
               <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-                {process.map((p, index) => (
+                {t.process.steps.map((p, index) => (
                   <article key={p.title} className="group relative text-center">
                     <div
                       className="process-step-icon relative mx-auto grid h-20 w-20 place-items-center rounded-full border border-white/10 bg-[#153351] shadow-[0_12px_30px_rgba(0,0,0,0.18)] transition-all duration-300 group-hover:-translate-y-2 group-hover:rotate-3 group-hover:border-[#d98a50]/55 group-hover:bg-[#1b405f]"
@@ -1004,19 +1278,18 @@ function Index() {
         <div className="relative mx-auto max-w-5xl px-6 py-16 md:py-20">
         <div data-reveal className="mb-9 max-w-xl">
           <p className="section-kicker">
-            Portfolio
+            {t.portfolio.kicker}
           </p>
           <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
-            A couple of demo websites.
+            {t.portfolio.heading}
           </h2>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-            Small examples of the type of modern websites we can create for
-            local businesses.
+            {t.portfolio.description}
           </p>
         </div>
 
         <div data-reveal className="grid gap-5 md:grid-cols-2">
-          {portfolio.map((p) => (
+          {t.portfolio.items.map((p) => (
             <article
               key={p.title}
               className="group grid grid-cols-[96px_1fr] overflow-hidden rounded-2xl border border-[#153351]/10 bg-[#f1f4f4] shadow-[0_10px_30px_rgba(11,33,54,0.07)] transition-all duration-300 hover:-translate-y-1 hover:border-[#c97745]/55 hover:shadow-[0_16px_38px_rgba(11,33,54,0.12)] sm:grid-cols-[120px_1fr]"
@@ -1042,11 +1315,11 @@ function Index() {
                     href={p.href}
                     className="mt-4 inline-flex w-fit items-center gap-1.5 text-sm font-semibold text-[#31526e] transition-all group-hover:translate-x-1 group-hover:text-[#95543b]"
                   >
-                    Open demo <ExternalLink className="h-3.5 w-3.5" />
+                    {t.portfolio.openDemo} <ExternalLink className="h-3.5 w-3.5" />
                   </a>
                 ) : (
                   <span className="mt-4 inline-flex w-fit rounded-full bg-[#dfe7e9] px-3 py-1 text-xs font-medium text-[#31526e]">
-                    Demo coming soon
+                    {t.portfolio.comingSoon}
                   </span>
                 )}
               </div>
@@ -1067,14 +1340,14 @@ function Index() {
         <div data-reveal className="relative mx-auto max-w-6xl px-6 py-24">
           <div className="mb-14 max-w-2xl">
             <p className="section-kicker">
-              Why choose us
+              {t.reasons.kicker}
             </p>
             <h2 className="mt-4 text-3xl font-bold sm:text-4xl">
-              Small enough to care. Skilled enough to deliver.
+              {t.reasons.heading}
             </h2>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {reasons.map((r) => (
+            {t.reasons.items.map((r) => (
               <div
                 key={r.title}
                 className="group flex items-start gap-3 rounded-lg border border-[#153351]/10 bg-[#f1f4f4] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-[#c97745]/60 hover:shadow-md"
@@ -1105,14 +1378,13 @@ function Index() {
         <div data-reveal className="grid gap-12 md:grid-cols-2">
           <div>
             <p className="section-kicker">
-              Contact
+              {t.contact.kicker}
             </p>
             <h2 className="mt-4 text-3xl font-bold sm:text-4xl">
-              Let's build something great.
+              {t.contact.heading}
             </h2>
             <p className="mt-4 text-muted-foreground">
-              Have an idea for a website? Contact us and we will help you turn
-              it into a professional online presence.
+              {t.contact.description}
             </p>
             <div className="mt-8 space-y-4">
               <div className="flex items-center gap-3 text-sm">
@@ -1121,7 +1393,7 @@ function Index() {
               </div>
               <div className="flex items-center gap-3 text-sm">
                 <MapPin className="h-4 w-4 text-[#31526e]" />
-                <span>Heraklion, Crete, Greece</span>
+                <span>{t.contact.location}</span>
               </div>
             </div>
           </div>
@@ -1133,7 +1405,7 @@ function Index() {
           >
             <div className="space-y-4">
               <div>
-                <label className="mb-1.5 block text-sm font-medium">Name</label>
+                <label className="mb-1.5 block text-sm font-medium">{t.contact.name}</label>
                 <input
                   required
                   name="name"
@@ -1143,7 +1415,7 @@ function Index() {
               </div>
               <div>
                 <label className="mb-1.5 block text-sm font-medium">
-                  Email
+                  {t.contact.email}
                 </label>
                 <input
                   required
@@ -1155,7 +1427,7 @@ function Index() {
               </div>
               <div>
                 <label className="mb-1.5 block text-sm font-medium">
-                  Message
+                  {t.contact.message}
                 </label>
                 <textarea
                   required
@@ -1167,7 +1439,7 @@ function Index() {
               <input
                 type="hidden"
                 name="_subject"
-                value="New Rocket3Dev website enquiry"
+                value={t.contact.subject}
               />
               <input type="hidden" name="_template" value="table" />
               <input
@@ -1182,7 +1454,7 @@ function Index() {
                 type="submit"
                 className="group inline-flex w-full items-center justify-center gap-2 rounded-md bg-[#c97745] px-6 py-3 font-semibold text-[#0b2136] transition-all hover:-translate-y-0.5 hover:bg-[#d98a50] active:scale-[0.99]"
               >
-                Send Message
+                {t.contact.send}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </button>
             </div>
@@ -1202,7 +1474,7 @@ function Index() {
                 </span>
                 Rocket3Dev
               </div>
-              <p className="mt-1.5 text-xs">Heraklion, Crete · Greece</p>
+              <p className="mt-1.5 text-xs">{t.footer.location}</p>
             </div>
             <ul className="flex flex-wrap gap-4 text-xs">
               {navItems.map((n) => (
@@ -1212,7 +1484,7 @@ function Index() {
                     onClick={(event) => handleSectionClick(event, n.href)}
                     className="transition-colors hover:text-white"
                   >
-                    {n.label}
+                    {t.nav[n.id]}
                   </a>
                 </li>
               ))}
@@ -1220,9 +1492,9 @@ function Index() {
           </div>
           <div className="mt-5 flex flex-col justify-between gap-2 border-t border-white/10 pt-4 text-[11px] sm:flex-row">
             <p>
-              © {new Date().getFullYear()} Rocket3Dev. All rights reserved.
+              © {new Date().getFullYear()} Rocket3Dev. {t.footer.rights}
             </p>
-            <p>Built by Rocket3Dev.</p>
+            <p>{t.footer.builtBy}</p>
           </div>
         </div>
       </footer>
