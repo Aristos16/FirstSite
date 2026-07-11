@@ -87,39 +87,38 @@ const translations = {
         "Είμαστε τρεις web developers με έδρα το Ηράκλειο Κρήτης. Ως μικρή ομάδα, συνεργαζόμαστε άμεσα με κάθε πελάτη και αναλαμβάνουμε προσωπικά κάθε project.",
       role: "Co-founder & Web Developer",
     },
-    servicesHeading:
-      "Ό,τι χρειάζεται η επιχείρησή σας για μια δυνατή online παρουσία.",
-    servicesKicker: "Υπηρεσίες",
+    servicesHeading: "Ιστοσελίδες για κάθε ανάγκη.",
+    servicesKicker: "Services",
     services: [
       {
         icon: Briefcase,
         title: "Business Websites",
-        desc: "Επαγγελματικές ιστοσελίδες που ενισχύουν την αξιοπιστία σας και μετατρέπουν τους επισκέπτες σε πελάτες.",
+        desc: "Υπηρεσίες, πληροφορίες και επικοινωνία σε ένα καθαρό site.",
       },
       {
         icon: User,
         title: "Portfolios",
-        desc: "Παρουσιάστε τη δουλειά, τις δεξιότητες και την επαγγελματική σας ταυτότητα μέσα από ένα σύγχρονο portfolio website.",
+        desc: "Η δουλειά και η εμπειρία σας σε σύγχρονη παρουσίαση.",
       },
       {
         icon: Store,
         title: "Εστίαση & Καταστήματα",
-        desc: "Μενού, ωράρια, κρατήσεις και όλες οι πληροφορίες που χρειάζονται οι πελάτες σας.",
+        desc: "Μενού, ωράρια, κρατήσεις και τοποθεσία.",
       },
       {
         icon: Layout,
         title: "Landing Pages",
-        desc: "Στοχευμένες σελίδες για προϊόντα, νέες κυκλοφορίες και καμπάνιες, σχεδιασμένες για ξεκάθαρα αποτελέσματα.",
+        desc: "Στοχευμένες σελίδες για προϊόντα και καμπάνιες.",
       },
       {
         icon: RefreshCw,
         title: "Website Redesign",
-        desc: "Ανανεώνουμε μια παλιά ιστοσελίδα με σύγχρονη εμφάνιση, καλύτερη εμπειρία χρήστη και απόδοση.",
+        desc: "Νέα εμφάνιση, καλύτερη ταχύτητα και εμπειρία.",
       },
       {
         icon: Smartphone,
         title: "Responsive Design",
-        desc: "Κάθε ιστοσελίδα λειτουργεί και δείχνει άψογα σε κινητά, tablets και υπολογιστές.",
+        desc: "Άψογη λειτουργία σε κάθε οθόνη.",
       },
     ],
     process: {
@@ -236,38 +235,38 @@ const translations = {
         "We are three web developers based in Heraklion, Crete. As a small team, we work directly with every client and personally handle each project.",
       role: "Co-founder & Web Developer",
     },
-    servicesHeading: "Everything you need to launch and grow online.",
+    servicesHeading: "Websites for every need.",
     servicesKicker: "Services",
     services: [
       {
         icon: Briefcase,
         title: "Business Websites",
-        desc: "Professional sites that establish credibility and convert visitors into customers.",
+        desc: "Services, information, and contact in one clear website.",
       },
       {
         icon: User,
-        title: "Personal Portfolios",
-        desc: "Showcase your work, skills, and story with a site that stands out.",
+        title: "Portfolios",
+        desc: "Your work and experience presented professionally.",
       },
       {
         icon: Store,
         title: "Restaurants, Cafes & Shops",
-        desc: "Menus, hours, bookings — everything your local customers need.",
+        desc: "Menus, hours, bookings, and location.",
       },
       {
         icon: Layout,
         title: "Landing Pages",
-        desc: "Focused, high-converting pages for products, launches, and campaigns.",
+        desc: "Focused pages for products and campaigns.",
       },
       {
         icon: RefreshCw,
-        title: "Website Redesigns",
-        desc: "Modernize an outdated site with a fresh look and better performance.",
+        title: "Website Redesign",
+        desc: "A fresh look, better speed, and easier use.",
       },
       {
         icon: Smartphone,
         title: "Responsive Design",
-        desc: "Every site looks flawless on phones, tablets, and desktops.",
+        desc: "A polished experience on every screen.",
       },
     ],
     process: {
@@ -1536,34 +1535,43 @@ function Index() {
         </svg>
         <div
           data-reveal
-          className="relative mx-auto max-w-6xl px-5 py-16 sm:px-6 sm:py-20 md:py-24"
+          className="relative mx-auto max-w-6xl px-5 py-12 sm:px-6 sm:py-16 md:py-20"
         >
-          <div className="mb-9 max-w-2xl sm:mb-12 md:mb-14">
-            <p className="section-kicker">{t.servicesKicker}</p>
-            <h2 className="mt-4 text-2xl font-bold leading-tight sm:text-4xl">
-              {t.servicesHeading}
-            </h2>
+          <div className="mb-7 flex items-end justify-between gap-6 sm:mb-9">
+            <div className="max-w-xl">
+              <p className="section-kicker">{t.servicesKicker}</p>
+              <h2 className="mt-3 text-2xl font-bold leading-tight sm:text-4xl">
+                {t.servicesHeading}
+              </h2>
+            </div>
+            <div className="hidden h-px flex-1 bg-gradient-to-r from-[#153351]/20 to-transparent md:block" />
           </div>
-          <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
-            {t.services.map((s) => (
-              <div
-                key={s.title}
-                className="group flex items-start gap-4 rounded-xl border border-[#153351]/10 bg-[#f1f4f4] p-5 transition-all duration-300 hover:-translate-y-1.5 hover:border-[#c97745] hover:shadow-[0_18px_45px_rgba(11,33,54,0.12)] sm:block sm:p-6"
-                style={{ boxShadow: "var(--shadow-card)" }}
-              >
-                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-[#153351] text-[#d98a50] transition-transform group-hover:scale-110 sm:mb-4 sm:h-11 sm:w-11">
-                  <s.icon className="h-5 w-5" />
-                </div>
-                <div className="min-w-0">
-                  <h3 className="text-base font-semibold sm:text-lg">
+
+          <div className="overflow-hidden rounded-[1.4rem] border border-[#153351]/10 bg-[#153351]/10 shadow-[0_16px_45px_rgba(11,33,54,0.08)]">
+            <div className="grid grid-cols-2 gap-px md:grid-cols-3">
+              {t.services.map((s, index) => (
+                <article
+                  key={s.title}
+                  className="group relative min-h-[142px] bg-[#eef2f2] p-4 transition-colors duration-300 hover:bg-[#f6f7f5] sm:min-h-[168px] sm:p-6"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#153351] text-[#d98a50] transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-105 sm:h-10 sm:w-10">
+                      <s.icon className="h-4 w-4 sm:h-5 sm:w-5" />
+                    </div>
+                    <span className="text-[10px] font-semibold tracking-[0.18em] text-[#7898aa]/70 sm:text-xs">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                  </div>
+                  <h3 className="mt-4 text-sm font-semibold leading-snug text-[#0b2136] sm:text-base">
                     {s.title}
                   </h3>
-                  <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground sm:mt-2">
+                  <p className="mt-1.5 text-xs leading-relaxed text-[#31526e] sm:mt-2 sm:text-sm">
                     {s.desc}
                   </p>
-                </div>
-              </div>
-            ))}
+                  <div className="absolute bottom-0 left-0 h-0.5 w-0 bg-[#c97745] transition-all duration-300 group-hover:w-full" />
+                </article>
+              ))}
+            </div>
           </div>
         </div>
       </section>
