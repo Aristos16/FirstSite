@@ -77,14 +77,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "ThreeDev Crete — Web Studio in Heraklion" },
-      { name: "description", content: "Modern, responsive, affordable websites built by three Computer Science students in Heraklion, Crete." },
-      { name: "author", content: "ThreeDev Crete" },
-      { property: "og:title", content: "ThreeDev Crete — Web Studio in Heraklion" },
-      { property: "og:description", content: "Modern, responsive, affordable websites built by three Computer Science students in Heraklion, Crete." },
+      { title: "Rocket3Dev — Modern Websites in Heraklion" },
+      { name: "description", content: "Modern, responsive, affordable websites by Rocket3Dev, a three-person Computer Science team in Heraklion, Crete." },
+      { name: "author", content: "Rocket3Dev" },
+      { property: "og:title", content: "Rocket3Dev — Modern Websites in Heraklion" },
+      { property: "og:description", content: "Modern, responsive, affordable websites by Rocket3Dev, a three-person Computer Science team in Heraklion, Crete." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
