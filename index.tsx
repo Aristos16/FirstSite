@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import {
   Code2,
   Rocket,
@@ -139,6 +139,10 @@ const navItems = [
 
 function Index() {
   const [open, setOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("home");
+  const [contactStatus, setContactStatus] = useState<
+    "idle" | "sending" | "success" | "error"
+  >("idle");
 
   useEffect(() => {
     const elements = document.querySelectorAll<HTMLElement>("[data-reveal]");
@@ -157,6 +161,78 @@ function Index() {
     elements.forEach((element) => observer.observe(element));
     return () => observer.disconnect();
   }, []);
+
+  useEffect(() => {
+    const sections = navItems
+      .map((item) => document.getElementById(item.href.slice(1)))
+      .filter((section): section is HTMLElement => Boolean(section));
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleEntry = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+        if (visibleEntry?.target.id) {
+          setActiveSection(visibleEntry.target.id);
+        }
+      },
+      {
+        rootMargin: "-28% 0px -58% 0px",
+        threshold: [0, 0.1, 0.3, 0.6],
+      },
+    );
+
+    sections.forEach((section) => observer.observe(section));
+
+    const keepHomeActiveAtTop = () => {
+      if (window.scrollY < 120) setActiveSection("home");
+    };
+
+    keepHomeActiveAtTop();
+    window.addEventListener("scroll", keepHomeActiveAtTop, { passive: true });
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("scroll", keepHomeActiveAtTop);
+    };
+  }, []);
+
+  async function handleContactSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setContactStatus("sending");
+
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    formData.append("_subject", "New Rocket3Dev website enquiry");
+    formData.append("_template", "table");
+    formData.append("_captcha", "false");
+
+    try {
+      const response = await fetch(
+        "https://formsubmit.co/ajax/rocket3devs@gmail.com",
+        {
+          method: "POST",
+          headers: { Accept: "application/json" },
+          body: formData,
+        },
+      );
+
+      const result = await response.json().catch(() => null);
+      const failed =
+        !response.ok ||
+        result?.success === false ||
+        result?.success === "false";
+
+      if (failed) throw new Error("The message could not be sent.");
+
+      form.reset();
+      setContactStatus("success");
+    } catch (error) {
+      console.error(error);
+      setContactStatus("error");
+    }
+  }
 
   return (
     <div className="min-h-screen bg-[#dfe7e9] text-[#0b2136]">
@@ -193,8 +269,14 @@ function Index() {
         }
 
         .nav-link:hover::after,
-        .nav-link:focus-visible::after {
+        .nav-link:focus-visible::after,
+        .nav-link.is-active::after {
           transform: scaleX(1);
+        }
+
+        .nav-link.is-active {
+          color: #0b2136;
+          font-weight: 600;
         }
 
         .mobile-menu {
@@ -278,6 +360,26 @@ function Index() {
           will-change: transform;
         }
 
+        .ambient-ring {
+          animation: ambientRingDrift 15s ease-in-out infinite;
+          will-change: transform;
+        }
+
+        .ambient-ring-reverse {
+          animation: ambientRingDriftReverse 18s ease-in-out infinite;
+          will-change: transform;
+        }
+
+        .ambient-path {
+          stroke-dasharray: 7 18;
+          animation: ambientPathFlow 24s linear infinite;
+        }
+
+        .ambient-path-reverse {
+          stroke-dasharray: 4 15;
+          animation: ambientPathFlow 30s linear infinite reverse;
+        }
+
         .process-kicker::before {
           display: none;
         }
@@ -337,6 +439,22 @@ function Index() {
           50% { transform: translate3d(-10px, -12px, 0) rotate(-5deg); }
         }
 
+        @keyframes ambientRingDrift {
+          0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+          45% { transform: translate3d(14px, -12px, 0) rotate(11deg); }
+          75% { transform: translate3d(-5px, 8px, 0) rotate(5deg); }
+        }
+
+        @keyframes ambientRingDriftReverse {
+          0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+          40% { transform: translate3d(-12px, 10px, 0) rotate(-10deg); }
+          72% { transform: translate3d(7px, -8px, 0) rotate(-4deg); }
+        }
+
+        @keyframes ambientPathFlow {
+          to { stroke-dashoffset: -280; }
+        }
+
         @keyframes menuDrop {
           from { opacity: 0; transform: translateY(-10px) scaleY(0.96); }
           to { opacity: 1; transform: translateY(0) scaleY(1); }
@@ -371,7 +489,14 @@ function Index() {
               <li key={n.href}>
                 <a
                   href={n.href}
-                  className="nav-link text-sm text-[#31526e] transition-colors hover:text-[#0b2136]"
+                  className={`nav-link text-sm transition-colors hover:text-[#0b2136] ${
+                    activeSection === n.href.slice(1)
+                      ? "is-active text-[#0b2136]"
+                      : "text-[#31526e]"
+                  }`}
+                  aria-current={
+                    activeSection === n.href.slice(1) ? "page" : undefined
+                  }
                 >
                   {n.label}
                 </a>
@@ -380,7 +505,11 @@ function Index() {
           </ul>
           <a
             href="#contact"
-            className="hidden rounded-md bg-[#153351] px-4 py-2 text-sm font-medium text-white transition-all hover:-translate-y-0.5 hover:bg-[#31526e] active:scale-[0.98] md:inline-flex"
+            className={`hidden rounded-md px-4 py-2 text-sm font-medium text-white transition-all hover:-translate-y-0.5 active:scale-[0.98] md:inline-flex ${
+              activeSection === "contact"
+                ? "bg-[#c97745] text-[#0b2136]"
+                : "bg-[#153351] hover:bg-[#31526e]"
+            }`}
           >
             Get in touch
           </a>
@@ -400,7 +529,14 @@ function Index() {
                   <a
                     href={n.href}
                     onClick={() => setOpen(false)}
-                    className="block rounded-md px-2 py-2.5 text-sm text-[#31526e] transition-all hover:translate-x-1 hover:bg-[#dbe4e6] hover:text-[#0b2136]"
+                    className={`block rounded-md px-2 py-2.5 text-sm transition-all hover:translate-x-1 hover:bg-[#dbe4e6] hover:text-[#0b2136] ${
+                      activeSection === n.href.slice(1)
+                        ? "bg-[#dbe4e6] font-semibold text-[#0b2136]"
+                        : "text-[#31526e]"
+                    }`}
+                    aria-current={
+                      activeSection === n.href.slice(1) ? "page" : undefined
+                    }
                   >
                     {n.label}
                   </a>
@@ -523,7 +659,10 @@ function Index() {
       >
         <div className="pointer-events-none absolute -left-24 top-24 h-56 w-56 rounded-full bg-[#7898aa]/10 blur-3xl" />
         <div className="ambient-dot pointer-events-none absolute left-[7%] top-[18%] h-4 w-4 rounded-full bg-[#c97745]/35" />
+        <div className="ambient-dot-reverse pointer-events-none absolute left-[12%] top-[30%] h-2.5 w-2.5 rounded-full bg-[#7898aa]/45" style={{ animationDelay: "-5s" }} />
         <div className="ambient-blob pointer-events-none absolute right-[5%] top-[20%] h-20 w-24 border border-[#153351]/10" />
+        <div className="ambient-ring pointer-events-none absolute right-[10%] top-[42%] h-14 w-14 rounded-full border border-[#c97745]/18" />
+        <div className="ambient-ring-reverse pointer-events-none absolute bottom-[9%] left-[4%] h-9 w-9 rounded-full border-2 border-[#7898aa]/18" style={{ animationDelay: "-7s" }} />
         <div className="ambient-tile pointer-events-none absolute bottom-[13%] right-[18%] h-6 w-6 rounded-lg border border-[#7898aa]/35 bg-[#d4e0e3]/35" style={{ animationDelay: "-4s" }} />
 
         <div className="relative mx-auto max-w-6xl px-6 py-20 md:py-24">
@@ -594,8 +733,14 @@ function Index() {
         className="relative scroll-mt-24 overflow-hidden bg-[linear-gradient(180deg,#dfe7e9_0%,#e9eef0_55%,#dfe7e9_100%)]"
       >
         <div className="ambient-blob pointer-events-none absolute right-[5%] top-[10%] h-24 w-28 border border-[#c97745]/14" />
+        <div className="ambient-ring pointer-events-none absolute right-[14%] top-[24%] h-10 w-10 rounded-full border border-[#7898aa]/22" style={{ animationDelay: "-3s" }} />
         <div className="ambient-tile pointer-events-none absolute bottom-[16%] left-[5%] h-7 w-7 rounded-xl border border-[#153351]/12 bg-[#d4e0e3]/25" />
         <div className="ambient-dot pointer-events-none absolute right-[20%] bottom-[10%] h-3 w-3 rounded-full bg-[#7898aa]/40" style={{ animationDelay: "-5s" }} />
+        <div className="ambient-dot-reverse pointer-events-none absolute left-[12%] top-[14%] h-3.5 w-3.5 rounded-full bg-[#c97745]/26" />
+        <svg className="pointer-events-none absolute inset-0 h-full w-full" viewBox="0 0 1440 760" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M980 70 C 1160 150, 1150 280, 1320 350 S 1480 530, 1370 690" fill="none" stroke="#7898aa" strokeOpacity="0.16" strokeWidth="1.5" className="ambient-path" />
+          <path d="M-100 620 C 140 520, 250 650, 430 560" fill="none" stroke="#c97745" strokeOpacity="0.12" strokeWidth="1.4" className="ambient-path-reverse" />
+        </svg>
         <div data-reveal className="relative mx-auto max-w-6xl px-6 py-24">
           <div className="mb-14 max-w-2xl">
             <p className="section-kicker">
@@ -633,6 +778,11 @@ function Index() {
           >
             <div className="process-orb-small absolute left-[13%] top-20 h-5 w-5 rounded-full bg-[#d98a50]/65 shadow-[0_0_28px_rgba(240,168,102,0.45)]" />
             <div className="process-orb-small absolute bottom-20 right-[17%] h-4 w-4 rounded-full bg-[#91adba]/60" style={{ animationDelay: "-3s" }} />
+            <div className="ambient-ring absolute right-[8%] top-[18%] h-10 w-10 rounded-full border border-white/10" style={{ animationDelay: "-6s" }} />
+            <div className="ambient-ring-reverse absolute bottom-[17%] left-[7%] h-8 w-8 rounded-full border border-[#d98a50]/16" />
+            <svg className="absolute inset-0 h-full w-full" viewBox="0 0 1440 620" preserveAspectRatio="none">
+              <path d="M-80 430 C 210 280, 390 460, 650 325 S 1060 190, 1510 300" fill="none" stroke="#91adba" strokeOpacity="0.10" strokeWidth="1.5" className="ambient-path" />
+            </svg>
           </div>
 
           <div
@@ -690,7 +840,9 @@ function Index() {
         className="relative scroll-mt-24 overflow-hidden bg-[linear-gradient(180deg,#dfe7e9_0%,#e9eef0_100%)]"
       >
         <div className="ambient-tile pointer-events-none absolute left-[8%] top-[18%] h-7 w-7 rounded-xl border border-[#7898aa]/28 bg-[#d4e0e3]/30" />
+        <div className="ambient-ring pointer-events-none absolute left-[4%] bottom-[13%] h-12 w-12 rounded-full border border-[#c97745]/15" style={{ animationDelay: "-6s" }} />
         <div className="ambient-blob pointer-events-none absolute bottom-[10%] right-[5%] h-20 w-24 border border-[#c97745]/13" style={{ animationDelay: "-4s" }} />
+        <div className="ambient-dot-reverse pointer-events-none absolute right-[14%] top-[16%] h-3 w-3 rounded-full bg-[#7898aa]/36" />
         <div className="relative mx-auto max-w-5xl px-6 py-16 md:py-20">
         <div data-reveal className="mb-9 max-w-xl">
           <p className="section-kicker">
@@ -749,8 +901,10 @@ function Index() {
       {/* Why choose us */}
       <section className="relative overflow-hidden bg-[#e9eef0]">
         <div className="ambient-blob pointer-events-none absolute left-[3%] top-[13%] h-24 w-28 border border-[#153351]/9" />
+        <div className="ambient-ring-reverse pointer-events-none absolute left-[11%] bottom-[19%] h-11 w-11 rounded-full border border-[#7898aa]/16" />
         <div className="ambient-dot-reverse pointer-events-none absolute right-[7%] top-[30%] h-4 w-4 rounded-full bg-[#c97745]/28" />
         <div className="ambient-dot pointer-events-none absolute bottom-[12%] left-[18%] h-3 w-3 rounded-full bg-[#7898aa]/40" style={{ animationDelay: "-6s" }} />
+        <div className="ambient-dot pointer-events-none absolute right-[21%] top-[13%] h-2.5 w-2.5 rounded-full bg-[#7898aa]/42" style={{ animationDelay: "-2s" }} />
         <div className="ambient-tile pointer-events-none absolute bottom-[13%] right-[14%] h-8 w-8 rounded-xl border border-[#c97745]/14 bg-[#dfe7e9]/25" style={{ animationDelay: "-3s" }} />
         <div data-reveal className="relative mx-auto max-w-6xl px-6 py-24">
           <div className="mb-14 max-w-2xl">
@@ -783,7 +937,12 @@ function Index() {
         className="relative scroll-mt-24 overflow-hidden bg-[linear-gradient(180deg,#e9eef0_0%,#dfe7e9_100%)]"
       >
         <div className="ambient-blob pointer-events-none absolute right-[5%] top-[11%] h-24 w-28 border border-[#7898aa]/18" />
+        <div className="ambient-ring pointer-events-none absolute right-[14%] bottom-[16%] h-12 w-12 rounded-full border border-[#c97745]/15" />
         <div className="ambient-dot-reverse pointer-events-none absolute bottom-[10%] left-[6%] h-4 w-4 rounded-full bg-[#c97745]/25" />
+        <div className="ambient-dot pointer-events-none absolute left-[14%] top-[17%] h-2.5 w-2.5 rounded-full bg-[#7898aa]/44" />
+        <svg className="pointer-events-none absolute inset-0 h-full w-full" viewBox="0 0 1440 700" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M1040 30 C 1210 120, 1170 260, 1340 350 S 1470 520, 1390 650" fill="none" stroke="#7898aa" strokeOpacity="0.14" strokeWidth="1.5" className="ambient-path-reverse" />
+        </svg>
         <div className="relative mx-auto max-w-6xl px-6 py-24">
         <div data-reveal className="grid gap-12 md:grid-cols-2">
           <div>
@@ -809,10 +968,7 @@ function Index() {
             </div>
           </div>
           <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              alert("Thanks! We'll be in touch soon.");
-            }}
+            onSubmit={handleContactSubmit}
             className="rounded-xl border border-[#153351]/10 bg-[#f1f4f4] p-6 sm:p-8"
             style={{ boxShadow: "var(--shadow-card)" }}
           >
@@ -821,6 +977,9 @@ function Index() {
                 <label className="mb-1.5 block text-sm font-medium">Name</label>
                 <input
                   required
+                  name="name"
+                  autoComplete="name"
+                  onChange={() => contactStatus !== "idle" && setContactStatus("idle")}
                   className="w-full rounded-md border border-[#153351]/15 bg-[#e8edef] px-3 py-2.5 text-sm outline-none transition-colors focus:border-[#c97745]"
                 />
               </div>
@@ -831,6 +990,9 @@ function Index() {
                 <input
                   required
                   type="email"
+                  name="email"
+                  autoComplete="email"
+                  onChange={() => contactStatus !== "idle" && setContactStatus("idle")}
                   className="w-full rounded-md border border-[#153351]/15 bg-[#e8edef] px-3 py-2.5 text-sm outline-none transition-colors focus:border-[#c97745]"
                 />
               </div>
@@ -840,16 +1002,42 @@ function Index() {
                 </label>
                 <textarea
                   required
+                  name="message"
                   rows={4}
+                  onChange={() => contactStatus !== "idle" && setContactStatus("idle")}
                   className="w-full resize-none rounded-md border border-[#153351]/15 bg-[#e8edef] px-3 py-2.5 text-sm outline-none transition-colors focus:border-[#c97745]"
                 />
               </div>
+              <input
+                type="text"
+                name="_honey"
+                tabIndex={-1}
+                autoComplete="off"
+                className="hidden"
+                aria-hidden="true"
+              />
               <button
                 type="submit"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-[#c97745] px-6 py-3 font-semibold text-[#0b2136] transition-all hover:-translate-y-0.5 hover:bg-[#d98a50]"
+                disabled={contactStatus === "sending"}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-[#c97745] px-6 py-3 font-semibold text-[#0b2136] transition-all hover:-translate-y-0.5 hover:bg-[#d98a50] disabled:cursor-wait disabled:opacity-65 disabled:hover:translate-y-0"
               >
-                Send Message <ArrowRight className="h-4 w-4" />
+                {contactStatus === "sending" ? "Sending..." : "Send Message"}
+                <ArrowRight className="h-4 w-4" />
               </button>
+
+              <div className="min-h-6" aria-live="polite">
+                {contactStatus === "success" && (
+                  <p className="text-sm font-medium text-emerald-700">
+                    Message sent successfully. We will get back to you soon.
+                  </p>
+                )}
+                {contactStatus === "error" && (
+                  <p className="text-sm font-medium text-red-700">
+                    The message could not be sent. Please email us directly at
+                    rocket3devs@gmail.com.
+                  </p>
+                )}
+              </div>
             </div>
           </form>
         </div>
